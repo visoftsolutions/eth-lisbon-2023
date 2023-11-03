@@ -1,31 +1,26 @@
-import {
-  loadFixture,
-} from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
 import { expect } from "chai";
 import hre from "hardhat";
 
-const SubjectFeePercent = 1000n
-const ProtocolFeePercent = 1000n
-const ETHER = 1000000000000000000n
+const SUBJECT_FEE_PERCENT = 1000n;
+const PROTOCOL_FEE_PERCENT = 1000n;
+const ETHER = 1_000_000_000_000_000_000n; // Better readability for large numbers
 
 describe("FriendtechSharesV1", function () {
-  // We define a fixture to reuse the same setup in every test.
-  // We use loadFixture to run this setup once, snapshot that state,
-  // and reset Hardhat Network to that snapshot in every test.
   async function deployFriendtechSharesFixture() {
-    // Contracts are deployed using the first signer/account by default
     const [owner, otherAccount] = await hre.viem.getWalletClients();
 
-    const fts_contract = await hre.viem.deployContract("FriendtechSharesV1");
+    const friendtechSharesContract = await hre.viem.deployContract("FriendtechSharesV1");
 
-    fts_contract.write.setFeeDestination([owner.account.address])
-    fts_contract.write.setSubjectFeePercent([SubjectFeePercent])
-    fts_contract.write.setProtocolFeePercent([ProtocolFeePercent])
+    // Set initial contract parameters
+    await friendtechSharesContract.write.setFeeDestination([owner.account.address]);
+    await friendtechSharesContract.write.setSubjectFeePercent([SUBJECT_FEE_PERCENT]);
+    await friendtechSharesContract.write.setProtocolFeePercent([PROTOCOL_FEE_PERCENT]);
 
     const publicClient = await hre.viem.getPublicClient();
 
     return {
-      fts_contract,
+      friendtechSharesContract,
       owner,
       otherAccount,
       publicClient,
@@ -33,47 +28,49 @@ describe("FriendtechSharesV1", function () {
   }
 
   describe("Check Initial Params", function () {
-    it("Check protocolFeeDestination", async function () {
-      const { fts_contract, owner } = await loadFixture(deployFriendtechSharesFixture);
-
-      expect((await fts_contract.read.protocolFeeDestination()).toLowerCase()).to.equal(owner.account.address)
+    it("should have the correct protocol fee destination", async function () {
+      const { friendtechSharesContract, owner } = await loadFixture(deployFriendtechSharesFixture);
+      expect((await friendtechSharesContract.read.protocolFeeDestination()).toLowerCase()).to.equal(owner.account.address.toLowerCase());
     });
-    it("Check subjectFeePercent", async function () {
-      const { fts_contract } = await loadFixture(deployFriendtechSharesFixture);
 
-      expect(await fts_contract.read.subjectFeePercent()).to.equal(SubjectFeePercent)
+    it("should have the correct subject fee percent", async function () {
+      const { friendtechSharesContract } = await loadFixture(deployFriendtechSharesFixture);
+      expect(await friendtechSharesContract.read.subjectFeePercent()).to.equal(SUBJECT_FEE_PERCENT);
     });
-    it("Check protocolFeePercent", async function () {
-      const { fts_contract } = await loadFixture(deployFriendtechSharesFixture);
 
-      expect(await fts_contract.read.protocolFeePercent()).to.equal(ProtocolFeePercent)
+    it("should have the correct protocol fee percent", async function () {
+      const { friendtechSharesContract } = await loadFixture(deployFriendtechSharesFixture);
+      expect(await friendtechSharesContract.read.protocolFeePercent()).to.equal(PROTOCOL_FEE_PERCENT);
     });
   });
 
   describe("Buy Shares flow", function () {
-    it("Buy first share", async function () {
-      const { fts_contract, owner } = await loadFixture(deployFriendtechSharesFixture);
-      await fts_contract.write.buyShares([owner.account.address, 1n])
+    it("should buy the first share correctly", async function () {
+      const { friendtechSharesContract, owner } = await loadFixture(deployFriendtechSharesFixture);
+      await friendtechSharesContract.write.buyShares([owner.account.address, 1n]);
 
-      expect(await fts_contract.read.sharesBalance([owner.account.address, owner.account.address])).to.equal(1n)
+      expect(await friendtechSharesContract.read.sharesBalance([owner.account.address, owner.account.address])).to.equal(1n);
     });
-    it("Second share price check", async function () {
-      const { fts_contract, owner } = await loadFixture(deployFriendtechSharesFixture);
-      const PRICE = 62500000000000n
-      await fts_contract.write.buyShares([owner.account.address, 1n])
 
-      expect(await fts_contract.read.getBuyPrice([owner.account.address, 1n])).to.equal(PRICE)
-      expect(await fts_contract.read.getBuyPriceAfterFee([owner.account.address, 1n])).to.equal(PRICE + PRICE * SubjectFeePercent / ETHER + PRICE * ProtocolFeePercent / ETHER)
+    it("should check the price of the second share", async function () {
+      const { friendtechSharesContract, owner } = await loadFixture(deployFriendtechSharesFixture);
+      const PRICE = 62500000000000n;
+      await friendtechSharesContract.write.buyShares([owner.account.address, 1n]);
+
+      expect(await friendtechSharesContract.read.getBuyPrice([owner.account.address, 1n])).to.equal(PRICE);
+      expect(await friendtechSharesContract.read.getBuyPriceAfterFee([owner.account.address, 1n])).to.equal(
+        PRICE + (PRICE * SUBJECT_FEE_PERCENT) / ETHER + (PRICE * PROTOCOL_FEE_PERCENT) / ETHER
+      );
     });
   });
 
   describe("Sell Shares flow", function () {
-    it("Sell first share price", async function () {
-      const { fts_contract, owner } = await loadFixture(deployFriendtechSharesFixture);
-      await fts_contract.write.buyShares([owner.account.address, 1n])
+    it("should get the sell price after fees correctly", async function () {
+      const { friendtechSharesContract, owner } = await loadFixture(deployFriendtechSharesFixture);
+      await friendtechSharesContract.write.buyShares([owner.account.address, 1n]);
 
-      expect(await fts_contract.read.sharesBalance([owner.account.address, owner.account.address])).to.equal(1n)
-      expect(await fts_contract.read.getSellPriceAfterFee([owner.account.address, 1n])).to.equal(0n)
+      expect(await friendtechSharesContract.read.sharesBalance([owner.account.address, owner.account.address])).to.equal(1n);
+      expect(await friendtechSharesContract.read.getSellPriceAfterFee([owner.account.address, 1n])).to.equal(0n);
     });
   });
 });
