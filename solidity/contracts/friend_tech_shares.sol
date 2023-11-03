@@ -111,6 +111,21 @@ contract FriendtechSharesV1 is Ownable {
         return price - protocolFee - subjectFee;
     }
 
+    /// @notice Retrieves the total supply of shares for a given subject
+    /// @param sharesSubject The subject associated with the shares whose total supply is to be retrieved
+    /// @return The total supply of shares for the specified subject
+    function getSharesSupply(address sharesSubject) public view returns (uint256) {
+        return sharesSupply[sharesSubject];
+    }
+
+    /// @notice Retrieves the balance of shares for a specific holder of a given subject
+    /// @param sharesSubject The subject associated with the shares
+    /// @param holder The address of the holder whose share balance is to be retrieved
+    /// @return The balance of shares the holder has for the specified subject
+    function getSharesBalance(address sharesSubject, address holder) public view returns (uint256) {
+        return sharesBalance[sharesSubject][holder];
+    }
+
     /// @notice Allows users to buy shares associated with a subject
     /// @param sharesSubject The subject associated with the shares to be bought
     /// @param amount The amount of shares to be bought

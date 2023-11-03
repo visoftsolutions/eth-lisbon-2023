@@ -49,7 +49,8 @@ describe("FriendtechSharesV1", function () {
       const { friendtechSharesContract, owner } = await loadFixture(deployFriendtechSharesFixture);
       await friendtechSharesContract.write.buyShares([owner.account.address, 1n]);
 
-      expect(await friendtechSharesContract.read.sharesBalance([owner.account.address, owner.account.address])).to.equal(1n);
+      expect(await friendtechSharesContract.read.getSharesSupply([owner.account.address])).to.equal(1n);
+      expect(await friendtechSharesContract.read.getSharesBalance([owner.account.address, owner.account.address])).to.equal(1n);
     });
 
     it("should check the price of the second share", async function () {
