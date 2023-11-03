@@ -16,8 +16,6 @@ jobs:
         with:
           node-version: '18.x'
       - name: Create local node and deploy
-        run: |
-          npx hardhat node &
-          npx hardhat run scripts/deploy.ts --network localhost
+        run: npm run -w solidity deploy.local
       - name: Run Tests
-        run: npx hardhat test
+        run: npm run -w solidity test
