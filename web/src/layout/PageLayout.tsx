@@ -6,7 +6,7 @@ interface Props {
 
 export function PageLayout({children}: Props) {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+    <main className="flex flex-col min-h-screen h-[100vh] items-center justify-center p-24">
       {children}
     </main>
   );

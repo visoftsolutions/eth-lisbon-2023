@@ -1,12 +1,11 @@
 'use client';
 
 import { HomeComponent } from "@/components/Home";
-import { PageLayout } from "@/layout/PageLayout";
 
 export default function Home() {
   return (
-    <PageLayout>
+    <main className="flex flex-col min-h-screen items-center justify-center">
       <HomeComponent />
-    </PageLayout>
+    </main>
   );
 }
