@@ -17,7 +17,7 @@ jobs:
           node-version: '18.x'
       - name: Create local node and deploy
         run: |
-          npm hardhat node &
-          npm hardhat run scripts/deploy.ts --network localhost
+          npx hardhat node &
+          npx hardhat run scripts/deploy.ts --network localhost
       - name: Run Tests
-        run: npm hardhat test
+        run: npx hardhat test
