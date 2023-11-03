@@ -1,0 +1,1 @@
+[![GitHub Workflow Status Hardhat Deploy&Test](https://github.com/visoftsolutions/eth-lisbon-2023/actions/workflows/hardhat.yml/badge.svg)](https://github.com/visoftsolutions/eth-lisbon-2023/actions/workflows/hardhat.yml)
