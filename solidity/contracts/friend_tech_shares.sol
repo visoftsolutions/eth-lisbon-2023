@@ -10,7 +10,7 @@ contract FriendtechSharesV1 is Ownable {
 
     event Trade(address trader, address subject, bool isBuy, uint256 shareAmount, uint256 ethAmount, uint256 protocolEthAmount, uint256 subjectEthAmount, uint256 supply);
 
-    // SharesSubject => (HoldWer => Balance)
+    // SharesSubject => (Holder => Balance)
     mapping(address => mapping(address => uint256)) public sharesBalance;
 
     // SharesSubject => Supply
