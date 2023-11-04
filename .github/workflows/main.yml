@@ -18,7 +18,5 @@ jobs:
           node-version: '18.x'
       - name: Install packages
         run: npm i
-      - name: Create local node and deploy
-        run: npm run -w solidity deploy.local
       - name: Run Tests
         run: npm run -w solidity test
