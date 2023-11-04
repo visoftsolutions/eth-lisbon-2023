@@ -1,121 +1,116 @@
 'use client';
 
-import { Web3AuthModalPack, Web3AuthConfig, AuthKitSignInData, Web3AuthEventListener } from '@safe-global/auth-kit';
-import { ADAPTER_EVENTS, CHAIN_NAMESPACES, SafeEventEmitterProvider, UserInfo, WALLET_ADAPTERS } from "@web3auth/base";
-import { Web3AuthOptions } from '@web3auth/modal';
-import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-
-const connectedHandler: Web3AuthEventListener = (data) => console.log('CONNECTED', data);
-const disconnectedHandler: Web3AuthEventListener = (data) => console.log('DISCONNECTED', data);
+import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
+import { OpenloginAdapter, OPENLOGIN_NETWORK } from "@web3auth/openlogin-adapter";
+import { Web3Auth } from "@web3auth/modal";
+import { ethers } from 'ethers'
 
 export function HomeComponent() {
-  const router = useRouter();
-  const [web3AuthModalPack, setWeb3AuthModalPack] = useState<Web3AuthModalPack>();
-  const [safeAuthSignInResponse, setSafeAuthSignInResponse] = useState<AuthKitSignInData | null>(
-    null
-  );
-  const [userInfo, setUserInfo] = useState<Partial<UserInfo>>();
-  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
-
-  useEffect(() => {
-    ;(async () => {
-      const options: Web3AuthOptions = {
-        clientId: 'BCbR9fbi8RFYiy7tYhMI-MqD13b_zqJGW6f_2jKSDRYCIamI15snKkBL2f4AUdkK0_zPK3mfy2F8cXNGdxFQOj8',
-        web3AuthNetwork: 'testnet',
-        chainConfig: {
-          chainNamespace: CHAIN_NAMESPACES.EIP155,
-          chainId: '0x5a2',
-          rpcTarget: 'https://rpc.public.zkevm-test.net/'
-        },
-        uiConfig: {
-          theme: 'dark',
-          loginMethodsOrder: ['google', 'facebook']
-        }
-      };
-
-      const modalConfig = {
-        [WALLET_ADAPTERS.TORUS_EVM]: {
-          label: 'torus',
-          showOnModal: false
-        },
-        [WALLET_ADAPTERS.METAMASK]: {
-          label: 'metamask',
-          showOnDesktop: true,
-          showOnMobile: false
-        }
-      };
-
-      const openloginAdapter = new OpenloginAdapter({
-        loginSettings: {
-          mfaLevel: 'optional'
-        },
-        adapterSettings: {
-          uxMode: 'popup',
-          whiteLabel: {
-            name: 'DeepTouch'
-          }
-        }
-      });
-
-      const web3AuthModalPack = new Web3AuthModalPack({
-        txServiceUrl: 'https://safe-transaction-goerli.safe.global'
-      });
-
-      await web3AuthModalPack.init({ options, adapters: [openloginAdapter], modalConfig });
-
-      web3AuthModalPack.subscribe(ADAPTER_EVENTS.CONNECTED, connectedHandler);
-      web3AuthModalPack.subscribe(ADAPTER_EVENTS.DISCONNECTED, disconnectedHandler);
-
-      setWeb3AuthModalPack(web3AuthModalPack);
-
-      return () => {
-        web3AuthModalPack.unsubscribe(ADAPTER_EVENTS.CONNECTED, connectedHandler);
-        web3AuthModalPack.unsubscribe(ADAPTER_EVENTS.DISCONNECTED, disconnectedHandler);
-      };
-    })();
-  }, []);
-
-  useEffect(() => {
-    // if (web3AuthModalPack && web3AuthModalPack.getProvider()) {
-    //   ;(async () => {
-    //     await login();
-    //   })();
-    // }
-
-    if(web3AuthModalPack && userInfo) {
-      router.push('/wallet');
-    }
-  }, [web3AuthModalPack, userInfo]);
 
   const login = async () => {
-    if (!web3AuthModalPack) return;
+    const web3auth = new Web3Auth({
+      clientId: 'BCbR9fbi8RFYiy7tYhMI-MqD13b_zqJGW6f_2jKSDRYCIamI15snKkBL2f4AUdkK0_zPK3mfy2F8cXNGdxFQOj8',
+      chainConfig: {
+        chainNamespace: CHAIN_NAMESPACES.EIP155,
+        chainId: "0x5",
+        rpcTarget: "https://rpc.ankr.com/eth_goerli", // This is the public RPC we have added, please pass on your own endpoint while creating an app
+      },
+      // uiConfig refers to the whitelabeling options, which is available only on Growth Plan and above
+      // Please remove this parameter if you're on the Base Plan
+      uiConfig: {
+        appName: "W3A",
+        // appLogo: "https://web3auth.io/images/w3a-L-Favicon-1.svg", // Your App Logo Here
+        mode: "dark",
+        logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
+        logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
+        defaultLanguage: "en", // en, de, ja, ko, zh, es, fr, pt, nl
+        loginGridCol: 3,
+        primaryButton: "externalLogin", // "externalLogin" | "socialLogin" | "emailLogin"
+      },
+      web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_DEVNET,
+    });
 
-    const signInInfo = await web3AuthModalPack.signIn();
-    console.log('SIGN IN RESPONSE: ', signInInfo);
+    const openloginAdapter = new OpenloginAdapter({
+      loginSettings: {
+        mfaLevel: "optional",
+      },
+      adapterSettings: {
+        uxMode: "popup", // "redirect" | "popup"
+        whiteLabel: {
+          logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
+          logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
+          defaultLanguage: "en", // en, de, ja, ko, zh, es, fr, pt, nl
+          mode: "dark", // whether to enable dark, light or auto mode. defaultValue: auto [ system theme]
+        },
+        mfaSettings: {
+          deviceShareFactor: {
+            enable: true,
+            priority: 1,
+            mandatory: true,
+          },
+          backUpShareFactor: {
+            enable: true,
+            priority: 2,
+            mandatory: false,
+          },
+          socialBackupFactor: {
+            enable: true,
+            priority: 3,
+            mandatory: false,
+          },
+          passwordFactor: {
+            enable: true,
+            priority: 4,
+            mandatory: false,
+          },
+        },
+      },
+    });
+    web3auth.configureAdapter(openloginAdapter);
 
-    const userInfo = await web3AuthModalPack.getUserInfo();
-    console.log('USER INFO: ', userInfo);
+    await web3auth.initModal({
+      modalConfig: {
+        [WALLET_ADAPTERS.OPENLOGIN]: {
+          label: "openlogin",
+          loginMethods: {
+            // Disable facebook and reddit
+            facebook: {
+              name: "facebook",
+              showOnModal: false
+            },
+            reddit: {
+              name: "reddit",
+              showOnModal: false
+            },
+            // Disable email_passwordless and sms_passwordless
+            email_passwordless: {
+              name: "email_passwordless",
+              showOnModal: false
+            },
+            sms_passwordless: {
+              name: "sms_passwordless",
+              showOnModal: false
+            }
+          }
+        }
+      }
+    });
 
-    setSafeAuthSignInResponse(signInInfo);
-    setUserInfo(userInfo || undefined);
-    setProvider(web3AuthModalPack.getProvider() as SafeEventEmitterProvider);
+    const web3authProvider = await web3auth.connect();
+    
+    console.log(web3authProvider);
+
+    // let provider = new ethers.providers.Web3Provider(web3authProvider)
+    // let signer = provider.getSigner()
+
+    setInterval(async () => {
+      await web3auth.logout();
+    }, 10000)
   };
 
   const logout = async () => {
-    if (!web3AuthModalPack) return;
 
-    await web3AuthModalPack.signOut();
-
-    setProvider(null);
-    setSafeAuthSignInResponse(null);
   };
-
-  // const onSubmit = async () => {
-  //   // await web3AuthModalPack.web3Auth?.connect();
-  //   const { eoa, safes } = await web3AuthModalPack.signIn();
-  // };
 
   return (
     <div className="flex flex-col gap-4 items-center">
