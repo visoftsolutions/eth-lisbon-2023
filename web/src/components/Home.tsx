@@ -8,12 +8,11 @@ import { useEffect } from 'react';
 
 // https://web3auth.io/docs/sdk/pnp/web/modal/initialize#arguments
 const options: Web3AuthOptions = {
-  clientId: 'BCbR9fbi8RFYiy7tYhMI-MqD13b_zqJGW6f_2jKSDRYCIamI15snKkBL2f4AUdkK0_zPK3mfy2F8cXNGdxFQOj8', // https://dashboard.web3auth.io/
+  clientId: 'BCbR9fbi8RFYiy7tYhMI-MqD13b_zqJGW6f_2jKSDRYCIamI15snKkBL2f4AUdkK0_zPK3mfy2F8cXNGdxFQOj8',
   web3AuthNetwork: 'testnet',
   chainConfig: {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
     chainId: '0x5a2',
-    // https://chainlist.org/
     rpcTarget: 'https://rpc.public.zkevm-test.net/'
   },
   uiConfig: {
@@ -51,7 +50,6 @@ const modalConfig = {
   },
 };
 
-// https://web3auth.io/docs/sdk/pnp/web/modal/whitelabel#whitelabeling-while-modal-initialization
 const openloginAdapter = new OpenloginAdapter({
   loginSettings: {
     mfaLevel: 'mandatory'
@@ -77,7 +75,7 @@ export function HomeComponent() {
     }
 
     init();
-  }, [web3AuthModalPack]);
+  }, []);
 
   const onSubmit = async () => {
     // await web3AuthModalPack.web3Auth?.connect();
