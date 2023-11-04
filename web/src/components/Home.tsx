@@ -99,17 +99,22 @@ export function HomeComponent() {
   }, [web3AuthModalPack, userInfo, safeAuthSignInResponse]);
 
   const login = async () => {
-    if (!web3AuthModalPack) return;
+    // if (!web3AuthModalPack) return;
 
-    const signInInfo = await web3AuthModalPack.signIn();
-    console.log('SIGN IN RESPONSE: ', signInInfo);
+    // const signInInfo = await web3AuthModalPack.signIn();
+    // console.log('SIGN IN RESPONSE: ', signInInfo);
 
-    const userInfo = await web3AuthModalPack.getUserInfo();
-    console.log('USER INFO: ', userInfo);
+    // const userInfo = await web3AuthModalPack.getUserInfo();
+    // console.log('USER INFO: ', userInfo);
 
-    setSafeAuthSignInResponse(signInInfo);
-    setUserInfo(userInfo || undefined);
-    setProvider(web3AuthModalPack.getProvider() as SafeEventEmitterProvider);
+    // setSafeAuthSignInResponse(signInInfo);
+    // setUserInfo(userInfo || undefined);
+    // setProvider(web3AuthModalPack.getProvider() as SafeEventEmitterProvider);
+    new RampInstantSDK({
+      hostAppName: 'Your App',
+      hostLogoUrl: 'https://assets.ramp.network/misc/test-logo.png',
+      hostApiKey: 'ohdyez6tzxc967rmayuezu8mg6fgxszn3b54myc5',
+    }).show();
   };
 
   return (

@@ -2,7 +2,9 @@
     "name": "poly-friend",
     "version": "1.0.0",
     "workspaces": [
-      "solidity"
+      "solidity",
+      "web",
+      "server"
     ],
     "scripts": {
       "clean": "rm -rf node_modules solidity/artifacts solidity/cache"
