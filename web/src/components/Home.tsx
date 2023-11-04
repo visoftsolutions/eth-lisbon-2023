@@ -7,6 +7,7 @@ import { Web3AuthOptions } from '@web3auth/modal';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk"
 
 const connectedHandler: Web3AuthEventListener = (data) => console.log('CONNECTED', data);
 const disconnectedHandler: Web3AuthEventListener = (data) => console.log('DISCONNECTED', data);
