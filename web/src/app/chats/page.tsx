@@ -11,7 +11,10 @@ import { useState } from "react";
 export default function Chats() {
   const [userInfoLocalStorageValue] = useLocalStorage("userInfo", {});
   console.log(userInfoLocalStorageValue);
-  const [selectedWalletStorage] = useLocalStorage('selectedWalletStorage', (userInfoLocalStorageValue as any).wallets[0]);
+  const [selectedWalletStorage] = useLocalStorage(
+    "selectedWalletStorage",
+    (userInfoLocalStorageValue as any).wallets[0]
+  );
 
   const [portoflioValueInEth, setPortfolioValueInEth] = useState<number>(0);
   const [ethValueInUsd, setEthValueInUsd] = useState<number>(0);
@@ -103,7 +106,6 @@ export default function Chats() {
                 />
                 <p className="text-lg font-medium">{name}</p>
               </div>
-
               <p className="text-lg font-bold">{value}</p>
             </Link>
           ))}

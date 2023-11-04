@@ -1,6 +1,5 @@
 "use client";
 
-import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { MessageTileComponent } from "@/components/MessageTile";
 import { SectionLayout } from "@/layout/SectionLayout";
 import {
@@ -13,12 +12,13 @@ import {
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 
 export default function Profile({ params }: { params: { address: string } }) {
   const [chat, setChat] = useState<"public" | "private">("public");
-  const [userInfoLocalStorageValue] = useLocalStorage("userInfo", {});
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
+  const { open } = useWeb3Modal();
 
   // Initialize the Web3Inbox SDK
   const isReady = useInitWeb3InboxClient({
@@ -137,38 +137,83 @@ export default function Profile({ params }: { params: { address: string } }) {
         <h2 className="text-2xl font-semibold">{content.name}</h2>
       </div>
 
-      <button onClick={performRegistration} disabled={isRegistering}>
-        {isRegistering ? "Signing..." : "Sign"}
-      </button>
-
-      <p>{JSON.stringify(subscription)}</p>
-
-      <button onClick={performSubscribe} disabled={isSubscribing}>
-        {isSubscribing ? "Subscribing..." : "Subscribe to notifications"}
-      </button>
-
-      <div className="flex w-full text-sm">
-        <button
-          onClick={() => setChat("public")}
-          className={`${
-            chat === "public"
-              ? "bg-yellow-400 text-white"
-              : "bg-gray-900 text-white"
-          } flex-1 py-1 font-medium`}
-        >
-          PUBLIC CHAT
-        </button>
-        <button
-          onClick={() => setChat("private")}
-          className={`${
-            chat === "private"
-              ? "bg-yellow-400 text-black"
-              : "bg-gray-900 text-white"
-          } flex-1 py-1 font-medium`}
-        >
-          PRIVATE CHAT
-        </button>
-      </div>
+      <>
+        {!isReady ? (
+          <div>Loading client...</div>
+        ) : (
+          <>
+            {!address ? (
+              <button onClick={() => open()}>Connect your wallet</button>
+            ) : (
+              <>
+                <div>Address: {address}</div>
+                <div>Account ID: {account}</div>
+                {!isRegistered ? (
+                  <div>
+                    To manage notifications, sign and register an identity
+                    key:&nbsp;
+                    <button
+                      onClick={performRegistration}
+                      disabled={isRegistering}
+                    >
+                      {isRegistering ? "Signing..." : "Sign"}
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {!isSubscribed ? (
+                      <>
+                        <button
+                          onClick={performSubscribe}
+                          disabled={isSubscribing}
+                        >
+                          {isSubscribing
+                            ? "Subscribing..."
+                            : "Subscribe to notifications"}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <form
+                          onSubmit={handleNotifySubmit}
+                          className="flex flex-col max-w-md mx-auto"
+                        >
+                          <div className="mt-4">
+                            <label
+                              htmlFor="message"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              Message:
+                            </label>
+                            <input
+                              id="message"
+                              value={notificationMessage}
+                              onChange={(e) =>
+                                setNotificationMessage(e.target.value)
+                              }
+                              required
+                              className="text-black mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                          </div>
+                          <button
+                            type="submit"
+                            className="mt-4 py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+                          >
+                            Send
+                          </button>
+                        </form>
+                        <div>You are subscribed</div>
+                        <div>Subscription: {JSON.stringify(subscription)}</div>
+                        <div>Messages: {JSON.stringify(messages)}</div>
+                      </>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </>
+        )}
+      </>
 
       {chat === "public" && (
         <div className="grid grid-cols-1 gap-4">

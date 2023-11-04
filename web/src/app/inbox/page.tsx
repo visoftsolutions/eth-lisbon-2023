@@ -1,4 +1,5 @@
 "use client";
+import { MessageTileComponent } from "@/components/MessageTile";
 import {
   useManageSubscription,
   useSubscription,
@@ -155,24 +156,6 @@ export default function App() {
                       >
                         <div className="mt-4">
                           <label
-                            htmlFor="title"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Title:
-                          </label>
-                          <input
-                            id="title"
-                            type="text"
-                            value={notificationTitle}
-                            onChange={(e) =>
-                              setNotificationTitle(e.target.value)
-                            }
-                            required
-                            className="text-black mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                          />
-                        </div>
-                        <div className="mt-4">
-                          <label
                             htmlFor="message"
                             className="block text-sm font-medium text-gray-700"
                           >
@@ -197,7 +180,18 @@ export default function App() {
                       </form>
                       <div>You are subscribed</div>
                       <div>Subscription: {JSON.stringify(subscription)}</div>
-                      <div>Messages: {JSON.stringify(messages)}</div>
+                      <div>
+                        Messages:{" "}
+                        {messages.map((x, i) => (
+                          <MessageTileComponent
+                            key={i}
+                            params={{
+                              date: new Date(),
+                              message: x.message.body,
+                            }}
+                          />
+                        ))}
+                      </div>
                     </>
                   )}
                 </>
