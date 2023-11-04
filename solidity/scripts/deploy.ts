@@ -1,12 +1,19 @@
-import { formatEther, parseEther } from "viem";
 import hre from "hardhat";
 
-async function main() {
-  const fts_contract = await hre.viem.deployContract("FriendtechSharesV1");
+const SELF_KISSER_ADDRESS = "0x0Dcc19657007713483A5cA76e6A7bbe5f56EA37d";
+const ORACLE_ETH_USD_ADDRESS = "0x90430C5b8045a1E2A0Fc4e959542a0c75b576439";
 
-  console.log(
-    `friend_tech_shares with ${fts_contract.address}`
-  );
+async function main() {
+  const deepTouch = await hre.viem.deployContract("DeepTouch");
+  const self_kisser = await hre.viem.getContractAt("ISelfKisser", SELF_KISSER_ADDRESS);
+
+  console.log(`DP contract at ${deepTouch.address}`);
+  console.log(`SK contract at ${self_kisser.address}`)
+
+  self_kisser.write.selfKiss([ORACLE_ETH_USD_ADDRESS, deepTouch.address])
+  
+  const price = await deepTouch.read.getEthPrice()
+  console.log(Number(price)/Number(10n**18n))
 }
 
 // We recommend this pattern to be able to use async/await everywhere

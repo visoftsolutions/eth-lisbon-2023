@@ -3,10 +3,13 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "./IChronicle.sol";
 
 /// @title A contract for managing tradable shares associated with subjects
 /// @notice This contract allows users to buy and sell shares associated with a subject
-contract FriendtechSharesV1 is Ownable {
+contract DeepTouch is Ownable {
+    address public constant CHRONICLE_ORACLE_ETH_USD = 0x90430C5b8045a1E2A0Fc4e959542a0c75b576439;
+
     using Address for address payable;
 
     // The address where protocol fees will be sent
@@ -33,6 +36,13 @@ contract FriendtechSharesV1 is Ownable {
 
     // SharesSubject => Supply
     mapping(address => uint256) public sharesSupply;
+
+    /// @notice Fetches the latest Ethereum price from the Chronicle Oracle
+    /// @dev Retrieves the current ETH/USD price from the Chronicle Oracle smart contract.
+    /// @return value The current ETH price in USD with precision as defined by the Oracle.
+    function getEthPrice() external view returns (uint value) {
+        return IChronicle(CHRONICLE_ORACLE_ETH_USD).read();
+    }
 
     /// @notice Sets the destination address for protocol fees
     /// @param _feeDestination The address to which protocol fees will be sent
