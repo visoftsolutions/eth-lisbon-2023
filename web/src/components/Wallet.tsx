@@ -18,7 +18,6 @@ export function WalletComponent() {
     if((address && data.event === 'SELECT_WALLET') || (address && isConnected)) {
       ; (async () => {
         if((userInfoLocalStorageValue as any).userId) {
-          
           await axios.get(`http://localhost:3001/user/${(userInfoLocalStorageValue as any).userId}`).then(async response => {
             console.log('get user res', response.data);
             let currentUserSettings = userInfoLocalStorageValue;
