@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { SectionLayout } from "@/layout/SectionLayout";
 import Image from "next/image";
 import Link from "next/link";

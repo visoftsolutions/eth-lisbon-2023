@@ -15,6 +15,20 @@ const app = express()
 app.use(express.json())
 const port = process.env.PORT ?? 3001
 
+app.get('/user', async (req: any, res: any) => {
+  const { data, error } = await supabase
+    .from('users')
+    .select('id, name, email, image')
+
+  if (error !== null) {
+    return res.status(500).send({
+      error
+    })
+  }
+
+  return res.send(data)
+})
+
 app.post('/user', async (req: any, res: any) => {
   console.log(req.body)
 

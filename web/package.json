@@ -9,13 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@headlessui/react": "^1.7.17",
     "@iexec/dataprotector": "^0.3.0",
     "@iexec/web3mail": "^0.5.2",
-=======
     "@ramp-network/ramp-instant-sdk": "^4.0.4",
->>>>>>> ef5f18a (RAMP installed not working no api key)
     "@safe-global/auth-kit": "^1.2.1",
     "@walletconnect/notify-client": "^0.14.4",
     "@web3auth/base": "4.6.0",

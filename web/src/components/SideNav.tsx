@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import truncateEthAddress from 'truncate-eth-address';
 import Image from 'next/image';
-import { useLocalStorage } from '@/app/hooks/useLocalStorage';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Listbox } from '@headlessui/react';
 import {AiOutlineArrowDown} from 'react-icons/ai';
 

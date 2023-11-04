@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useWeb3Modal, useWeb3ModalEvents } from '@web3modal/wagmi/react';
 import { useAccount } from 'wagmi';
 import { useEffect } from 'react';
-import { useLocalStorage } from '@/app/hooks/useLocalStorage';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 export function WalletComponent() {
   const router = useRouter();
