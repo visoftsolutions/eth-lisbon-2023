@@ -7,7 +7,7 @@ import {
   useMessages,
 } from "@web3inbox/widget-react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSignMessage, useAccount } from "wagmi";
 
 export default function App() {
@@ -61,14 +61,62 @@ export default function App() {
   const { subscription } = useSubscription();
   const { messages } = useMessages();
 
+  const performNotify = async (
+    accounts: (string | undefined)[],
+    title: string,
+    message: string
+  ) => {
+    fetch(
+      "https://notify.walletconnect.com/a61fa6ebedad90290dcb5dab3b28afac/notify",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer f72abdf2-c2c1-4155-9b1d-40a9fb3858f1",
+        },
+        body: JSON.stringify({
+          notification: {
+            type: "c9c2dacd-1b7b-4529-ab1c-1cc12808bfa5",
+            title: title,
+            body: message,
+          },
+          accounts: accounts,
+        }),
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  // State to hold the title and message input values
+  const [notificationTitle, setNotificationTitle] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState("");
+
+  // Function to handle the form submission
+  const handleNotifySubmit = async (event: any) => {
+    event.preventDefault();
+    await performNotify([account], notificationTitle, notificationMessage);
+    // Optionally, reset the form fields
+    setNotificationTitle("");
+    setNotificationMessage("");
+  };
+
   return (
     <>
       {!isReady ? (
         <div>Loading client...</div>
       ) : (
         <>
-          <p>{account}</p>
-          <p>{`${subscription}`}</p>
           {!address ? (
             <button onClick={() => open()}>Connect your wallet</button>
           ) : (
@@ -101,6 +149,52 @@ export default function App() {
                     </>
                   ) : (
                     <>
+                      <form
+                        onSubmit={handleNotifySubmit}
+                        className="flex flex-col max-w-md mx-auto"
+                      >
+                        <div className="mt-4">
+                          <label
+                            htmlFor="title"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Title:
+                          </label>
+                          <input
+                            id="title"
+                            type="text"
+                            value={notificationTitle}
+                            onChange={(e) =>
+                              setNotificationTitle(e.target.value)
+                            }
+                            required
+                            className="text-black mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                        <div className="mt-4">
+                          <label
+                            htmlFor="message"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Message:
+                          </label>
+                          <input
+                            id="message"
+                            value={notificationMessage}
+                            onChange={(e) =>
+                              setNotificationMessage(e.target.value)
+                            }
+                            required
+                            className="text-black mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          className="mt-4 py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+                        >
+                          Send Notification
+                        </button>
+                      </form>
                       <div>You are subscribed</div>
                       <div>Subscription: {JSON.stringify(subscription)}</div>
                       <div>Messages: {JSON.stringify(messages)}</div>

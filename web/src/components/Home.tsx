@@ -1,5 +1,6 @@
-'use client';
+"use client";
 
+<<<<<<< Updated upstream
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Web3AuthModalPack, AuthKitSignInData, Web3AuthEventListener } from '@safe-global/auth-kit';
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES, SafeEventEmitterProvider, UserInfo, WALLET_ADAPTERS } from "@web3auth/base";
@@ -9,71 +10,115 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
 import axios from 'axios';
+=======
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import {
+  Web3AuthModalPack,
+  AuthKitSignInData,
+  Web3AuthEventListener,
+} from "@safe-global/auth-kit";
+import {
+  ADAPTER_EVENTS,
+  CHAIN_NAMESPACES,
+  SafeEventEmitterProvider,
+  UserInfo,
+  WALLET_ADAPTERS,
+} from "@web3auth/base";
+import { Web3AuthOptions } from "@web3auth/modal";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+>>>>>>> Stashed changes
 
-const connectedHandler: Web3AuthEventListener = (data) => console.log('CONNECTED', data);
-const disconnectedHandler: Web3AuthEventListener = (data) => console.log('DISCONNECTED', data);
+const connectedHandler: Web3AuthEventListener = (data) =>
+  console.log("CONNECTED", data);
+const disconnectedHandler: Web3AuthEventListener = (data) =>
+  console.log("DISCONNECTED", data);
 
 export function HomeComponent() {
   const router = useRouter();
-  const [web3AuthModalPack, setWeb3AuthModalPack] = useState<Web3AuthModalPack>();
-  const [safeAuthSignInResponse, setSafeAuthSignInResponse] = useState<AuthKitSignInData | null>(
+  const [web3AuthModalPack, setWeb3AuthModalPack] =
+    useState<Web3AuthModalPack>();
+  const [safeAuthSignInResponse, setSafeAuthSignInResponse] =
+    useState<AuthKitSignInData | null>(null);
+  const [userInfo, setUserInfo] = useState<Partial<UserInfo>>();
+  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
     null
   );
+<<<<<<< Updated upstream
   const [userInfo, setUserInfo] = useState<Partial<UserInfo>>();
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
   const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] = useLocalStorage<{} | null>('userInfo', null);
 
+=======
+  const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] =
+    useLocalStorage<any>("userInfo", null);
+>>>>>>> Stashed changes
 
   useEffect(() => {
-    ; (async () => {
+    (async () => {
       const options: Web3AuthOptions = {
-        clientId: 'BCbR9fbi8RFYiy7tYhMI-MqD13b_zqJGW6f_2jKSDRYCIamI15snKkBL2f4AUdkK0_zPK3mfy2F8cXNGdxFQOj8',
-        web3AuthNetwork: 'testnet',
+        clientId:
+          "BCbR9fbi8RFYiy7tYhMI-MqD13b_zqJGW6f_2jKSDRYCIamI15snKkBL2f4AUdkK0_zPK3mfy2F8cXNGdxFQOj8",
+        web3AuthNetwork: "testnet",
         chainConfig: {
           chainNamespace: CHAIN_NAMESPACES.EIP155,
-          chainId: '0x5a2',
-          rpcTarget: 'https://rpc.public.zkevm-test.net/'
+          chainId: "0x5a2",
+          rpcTarget: "https://rpc.public.zkevm-test.net/",
         },
         uiConfig: {
-          theme: 'dark',
-        }
+          theme: "dark",
+        },
       };
 
       const modalConfig = {
         [WALLET_ADAPTERS.METAMASK]: {
-          label: 'metamask',
+          label: "metamask",
           showOnDesktop: true,
-          showOnMobile: true
-        }
+          showOnMobile: true,
+        },
       };
 
       const openloginAdapter = new OpenloginAdapter({
         loginSettings: {
-          mfaLevel: 'optional'
+          mfaLevel: "optional",
         },
         adapterSettings: {
-          uxMode: 'popup',
+          uxMode: "popup",
           whiteLabel: {
-            name: 'DeepTouch',
+            name: "DeepTouch",
             dark: true,
-          }
-        }
+          },
+        },
       });
 
       const web3AuthModalPack = new Web3AuthModalPack({
-        txServiceUrl: 'https://safe-transaction-goerli.safe.global'
+        txServiceUrl: "https://safe-transaction-goerli.safe.global",
       });
 
-      await web3AuthModalPack.init({ options, adapters: [openloginAdapter], modalConfig });
+      await web3AuthModalPack.init({
+        options,
+        adapters: [openloginAdapter],
+        modalConfig,
+      });
 
       web3AuthModalPack.subscribe(ADAPTER_EVENTS.CONNECTED, connectedHandler);
-      web3AuthModalPack.subscribe(ADAPTER_EVENTS.DISCONNECTED, disconnectedHandler);
+      web3AuthModalPack.subscribe(
+        ADAPTER_EVENTS.DISCONNECTED,
+        disconnectedHandler
+      );
 
       setWeb3AuthModalPack(web3AuthModalPack);
 
       return () => {
-        web3AuthModalPack.unsubscribe(ADAPTER_EVENTS.CONNECTED, connectedHandler);
-        web3AuthModalPack.unsubscribe(ADAPTER_EVENTS.DISCONNECTED, disconnectedHandler);
+        web3AuthModalPack.unsubscribe(
+          ADAPTER_EVENTS.CONNECTED,
+          connectedHandler
+        );
+        web3AuthModalPack.unsubscribe(
+          ADAPTER_EVENTS.DISCONNECTED,
+          disconnectedHandler
+        );
       };
     })();
   }, []);
@@ -95,6 +140,9 @@ export function HomeComponent() {
   }, [userInfoLocalStorageValue]);
 
   useEffect(() => {
+    console.log(web3AuthModalPack);
+    console.log(userInfo);
+    console.log(safeAuthSignInResponse);
     if (web3AuthModalPack && userInfo && safeAuthSignInResponse) {
       // INFO: Moment w którym user się loguje
 
@@ -110,6 +158,7 @@ export function HomeComponent() {
         }).then(async response => {
           await axios.post(`http://localhost:3001/user/${response.data[0].id}/wallet`, {
             address: safeAuthSignInResponse.eoa,
+<<<<<<< Updated upstream
             kind: 'internal'
           }).then(async walletResponse => {
             setUserInfoLocalStorageValue({
@@ -138,19 +187,33 @@ export function HomeComponent() {
         });
       })();
     
+=======
+            kind: "internal",
+          },
+        ],
+      });
+>>>>>>> Stashed changes
 
-      router.push('/wallet');
+      router.push("/wallet");
     }
   }, [web3AuthModalPack, userInfo, safeAuthSignInResponse]);
 
   const login = async () => {
     // if (!web3AuthModalPack) return;
 
+<<<<<<< Updated upstream
     // const signInInfo = await web3AuthModalPack.signIn();
     // console.log('SIGN IN RESPONSE: ', signInInfo);
 
     // const userInfo = await web3AuthModalPack.getUserInfo();
     // console.log('USER INFO: ', userInfo);
+=======
+    const signInInfo = await web3AuthModalPack.signIn();
+    console.log("SIGN IN RESPONSE: ", signInInfo);
+
+    const userInfo = await web3AuthModalPack.getUserInfo();
+    console.log("USER INFO: ", userInfo);
+>>>>>>> Stashed changes
 
     // setSafeAuthSignInResponse(signInInfo);
     // setUserInfo(userInfo || undefined);
@@ -169,10 +232,22 @@ export function HomeComponent() {
 
   return (
     <div className="flex flex-col gap-4 items-center">
+<<<<<<< Updated upstream
       <h1 className='text-4xl font-bold text-white'>DEEP TOUCH</h1>
       <h2 className='text-3xl font-bold text-white'>TAKE THE LEAP INTO DEEP TOUCH</h2>
 
       <button className='bg-yellow-400 text-black font-medium py-2 px-4 rounded-md' onClick={async () => await login()}>Start your journey </button>
+=======
+      <h1 className="text-4xl font-bold text-white">DEEP TOUCH</h1>
+      <h2 className="text-3xl font-bold text-white">WELCOME TO THE MADNESS.</h2>
+
+      <button
+        className="bg-yellow-400 text-black font-medium py-2 px-4 rounded-md"
+        onClick={async () => await login()}
+      >
+        Join the game
+      </button>
+>>>>>>> Stashed changes
     </div>
   );
 }
