@@ -15,7 +15,12 @@
     "@web3auth/openlogin-adapter": "4.3",
     "next": "14.0.1",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "@walletconnect/notify-client": "^0.14.4",
+    "@web3inbox/core": "^0.0.22",
+    "@web3inbox/widget-react": "^0.6.25",
+    "viem": "^1.18.4",
+    "wagmi": "^1.4.5"
   },
   "devDependencies": {
     "@types/node": "^20",
