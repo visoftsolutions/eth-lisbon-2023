@@ -3,8 +3,11 @@
 import { SectionLayout } from "@/layout/SectionLayout";
 import Image from "next/image";
 import Link from "next/link";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 export default function Chats() {
+  const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] = useLocalStorage('userInfo', {});
+  console.log(userInfoLocalStorageValue);
 
   const data = [
     {

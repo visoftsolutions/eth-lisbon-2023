@@ -1,5 +1,6 @@
 'use client';
 
+import { useLocalStorage } from '@/app/hooks/useLocalStorage';
 import { Web3AuthModalPack, AuthKitSignInData, Web3AuthEventListener } from '@safe-global/auth-kit';
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES, SafeEventEmitterProvider, UserInfo, WALLET_ADAPTERS } from "@web3auth/base";
 import { Web3AuthOptions } from '@web3auth/modal';
@@ -18,6 +19,7 @@ export function HomeComponent() {
   );
   const [userInfo, setUserInfo] = useState<Partial<UserInfo>>();
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
+  const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] = useLocalStorage('userInfo', {});
 
   useEffect(() => {
     ; (async () => {
@@ -74,10 +76,26 @@ export function HomeComponent() {
   }, []);
 
   useEffect(() => {
-    if (web3AuthModalPack && userInfo) {
+    if(userInfoLocalStorageValue) {
       router.push('/wallet');
     }
-  }, [web3AuthModalPack, userInfo]);
+  }, [userInfoLocalStorageValue]);
+
+  useEffect(() => {
+    if (web3AuthModalPack && userInfo && safeAuthSignInResponse) {
+      setUserInfoLocalStorageValue({
+        ...userInfo,
+        wallets: [
+          {
+            address: safeAuthSignInResponse.eoa,
+            kind: 'internal'
+          }
+        ]
+      });
+
+      router.push('/wallet');
+    }
+  }, [web3AuthModalPack, userInfo, safeAuthSignInResponse]);
 
   const login = async () => {
     if (!web3AuthModalPack) return;

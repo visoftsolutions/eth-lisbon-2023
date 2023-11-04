@@ -3,16 +3,21 @@
 import { useRouter } from 'next/navigation';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { useAccount } from 'wagmi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import truncateEthAddress from 'truncate-eth-address';
 import Image from 'next/image';
+import { useLocalStorage } from '@/app/hooks/useLocalStorage';
+import { Listbox } from '@headlessui/react';
+import {AiOutlineArrowDown} from 'react-icons/ai';
 
 
 export function SideNav() {
-  const router = useRouter();
   const { open } = useWeb3Modal();
   const { address, isConnected } = useAccount();
+  const [userInfoLocalStorageValue] = useLocalStorage('userInfo', {});
+  const [selectedWallet, setSelectedWallet] = useState((userInfoLocalStorageValue as any).wallets[0]);
+  console.log({selectedWallet});
   
   return (
     <div className="flex flex-col gap-8 min-w-[200px]">
@@ -25,12 +30,31 @@ export function SideNav() {
         <Link className='text-lg' href={'/explore'}>Explore</Link>
         <Link className='text-lg' href={'/airdrop'}>Airdrop</Link>
       </div>
+
+      <div className="">
+        <span className=''>Connected wallet</span>
+        <Listbox value={selectedWallet} onChange={setSelectedWallet}>
+          <Listbox.Button className='text-xs text-gray-400 p-2 border border-gray-800 rounded-md flex justify-between w-full'>
+            {truncateEthAddress(selectedWallet.address)}
+            <AiOutlineArrowDown size={16} />
+          </Listbox.Button>
+
+          <Listbox.Options>
+            {(userInfoLocalStorageValue as any)?.wallets?.map((wallet: any, index: any) => (
+              <Listbox.Option
+                key={`${wallet.address}-${index}`}
+                value={wallet}
+                className='text-xs text-gray-400 p-2 border border-gray-800 rounded-md hover:bg-gray-900 cursor-pointer'
+              >
+                {truncateEthAddress(wallet.address)}
+              </Listbox.Option>
+            ))}
+          </Listbox.Options>
+        </Listbox>
+      </div>
       
 
-      {address && <div className="text-xs text-gray-300 flex flex-col gap-1">
-        <span className=''>Connected wallet</span>
-        <p>{truncateEthAddress(address)}</p>
-      </div> }
+
       {isConnected && <button className='border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md' onClick={() => open()}>Disconnect wallet</button>}
     </div>
   );

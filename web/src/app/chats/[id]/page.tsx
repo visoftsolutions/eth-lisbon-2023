@@ -1,5 +1,6 @@
 'use client';
 
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { SectionLayout } from "@/layout/SectionLayout";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +10,7 @@ import { useState } from "react";
 
 export default function Profile({ params }: { params: { id: string } }) {
   const [chat, setChat] = useState<'public' | 'private'>('public');
+  const [userInfoLocalStorageValue] = useLocalStorage('userInfo', {});
 
   const content = {
     id: params.id,
@@ -20,6 +22,7 @@ export default function Profile({ params }: { params: { id: string } }) {
     }
   };
 
+  console.log(userInfoLocalStorageValue);
   
   return (
     <SectionLayout>
