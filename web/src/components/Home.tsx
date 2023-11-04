@@ -1,6 +1,6 @@
 'use client';
 
-import { Web3AuthModalPack, Web3AuthConfig, AuthKitSignInData, Web3AuthEventListener } from '@safe-global/auth-kit';
+import { Web3AuthModalPack, AuthKitSignInData, Web3AuthEventListener } from '@safe-global/auth-kit';
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES, SafeEventEmitterProvider, UserInfo, WALLET_ADAPTERS } from "@web3auth/base";
 import { Web3AuthOptions } from '@web3auth/modal';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
@@ -20,7 +20,7 @@ export function HomeComponent() {
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       const options: Web3AuthOptions = {
         clientId: 'BCbR9fbi8RFYiy7tYhMI-MqD13b_zqJGW6f_2jKSDRYCIamI15snKkBL2f4AUdkK0_zPK3mfy2F8cXNGdxFQOj8',
         web3AuthNetwork: 'testnet',
@@ -31,19 +31,14 @@ export function HomeComponent() {
         },
         uiConfig: {
           theme: 'dark',
-          loginMethodsOrder: ['google', 'facebook']
         }
       };
 
       const modalConfig = {
-        [WALLET_ADAPTERS.TORUS_EVM]: {
-          label: 'torus',
-          showOnModal: false
-        },
         [WALLET_ADAPTERS.METAMASK]: {
           label: 'metamask',
           showOnDesktop: true,
-          showOnMobile: false
+          showOnMobile: true
         }
       };
 
@@ -54,7 +49,8 @@ export function HomeComponent() {
         adapterSettings: {
           uxMode: 'popup',
           whiteLabel: {
-            name: 'DeepTouch'
+            name: 'DeepTouch',
+            dark: true,
           }
         }
       });
@@ -84,7 +80,7 @@ export function HomeComponent() {
     //   })();
     // }
 
-    if(web3AuthModalPack && userInfo) {
+    if (web3AuthModalPack && userInfo) {
       router.push('/wallet');
     }
   }, [web3AuthModalPack, userInfo]);
@@ -111,11 +107,6 @@ export function HomeComponent() {
     setProvider(null);
     setSafeAuthSignInResponse(null);
   };
-
-  // const onSubmit = async () => {
-  //   // await web3AuthModalPack.web3Auth?.connect();
-  //   const { eoa, safes } = await web3AuthModalPack.signIn();
-  // };
 
   return (
     <div className="flex flex-col gap-4 items-center">
