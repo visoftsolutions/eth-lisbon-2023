@@ -6,20 +6,36 @@ import Link from "next/link";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useContractRead, useAccount } from "wagmi";
 import DeepTouchAbi from '../../abi/DeepTouch.json';
+import { useState } from "react";
 
 export default function Chats() {
   const [userInfoLocalStorageValue] = useLocalStorage("userInfo", {});
   console.log(userInfoLocalStorageValue);
   const [selectedWalletStorage] = useLocalStorage('selectedWalletStorage', (userInfoLocalStorageValue as any).wallets[0]);
 
-  const { data: contractReadData, isError, isLoading } = useContractRead({
+  const [portoflioValueInEth, setPortfolioValueInEth] = useState<number>(0);
+  const [ethValueInUsd, setEthValueInUsd] = useState<number>(0);
+
+  useContractRead({
     address: '0xad4f715cff8d7ea0db728b8b89d27a357d9be613',
     abi: DeepTouchAbi,
     functionName: 'getSharesSupply',
-    args: [selectedWalletStorage.address]
+    args: [selectedWalletStorage.address],
+    onSuccess(data) {
+      setPortfolioValueInEth(Number(data));
+    },
   });
 
-  console.log(contractReadData);
+  useContractRead({
+    address: '0xad4f715cff8d7ea0db728b8b89d27a357d9be613',
+    abi: DeepTouchAbi,
+    functionName: 'getEthPrice',
+    onSuccess(data) {
+      console.log('ethValueInUsd', data);
+      
+      setEthValueInUsd(parseFloat((Number(data)/Number(10 ** 18)).toFixed(2)));
+    },
+  });
 
   const data = [
     {
@@ -56,15 +72,15 @@ export default function Chats() {
         <div className="flex flex-col gap-1 bg-yellow-400 text-black p-3 rounded-md flex-1">
           <span className="text-xs">YOUR KEY VALUE</span>
           <div className="flex justify-between font-semibold">
-            <p>$10.00</p>
-            <p>1 ETH</p>
+            <p>${portoflioValueInEth * ethValueInUsd}</p>
+            <p>{portoflioValueInEth} ETH</p>
           </div>
         </div>
 
-        <div className="flex flex-col gap-1 bg-yellow-400 text-black p-3 rounded-md flex-1">
+        {/* <div className="flex flex-col gap-1 bg-yellow-400 text-black p-3 rounded-md flex-1">
           <span className="text-xs">YOUR RANK</span>
           <p className="flex gap-2 font-semibold">2137</p>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex flex-col gap-4">

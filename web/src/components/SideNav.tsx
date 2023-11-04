@@ -52,11 +52,8 @@ export function SideNav() {
         <Link className='text-lg' href={'/airdrop'}>Airdrop</Link>
       </div>
 
-      
-      
-
-
-      {isConnected && <button className='border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md' onClick={() => open()}>Disconnect wallet</button>}
+    
+      {/* {isConnected && <button className='border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md' onClick={() => open()}>Disconnect wallet</button>} */}
     </div>
   );
 }

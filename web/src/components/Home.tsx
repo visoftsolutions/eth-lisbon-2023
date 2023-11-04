@@ -194,7 +194,7 @@ export function HomeComponent() {
   };
 
   return (
-    <div className="flex flex-col gap-4 items-center">
+    <div className="flex flex-col gap-8 items-center z-[100]">
       <h1 className='text-4xl font-bold text-white'>DEEP TOUCH</h1>
       <h2 className='text-3xl font-bold text-white'>TAKE THE LEAP INTO DEEP TOUCH</h2>
 
