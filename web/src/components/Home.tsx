@@ -74,12 +74,6 @@ export function HomeComponent() {
   }, []);
 
   useEffect(() => {
-    // if (web3AuthModalPack && web3AuthModalPack.getProvider()) {
-    //   ;(async () => {
-    //     await login();
-    //   })();
-    // }
-
     if (web3AuthModalPack && userInfo) {
       router.push('/wallet');
     }
