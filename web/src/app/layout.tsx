@@ -1,8 +1,6 @@
 'use client';
-// import { Inter } from "next/font/google";
-import "./globals.css";
 
-// const inter = Inter({ subsets: ["latin"] });
+import "./globals.css";
 
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react';
 
@@ -35,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" title="Deep Touch">
       <body>
         <WagmiConfig config={wagmiConfig}>
           {children}

@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@walletconnect/notify-client": "^0.14.4",
+    "@headlessui/react": "^1.7.17",
+    "@iexec/dataprotector": "^0.3.0",
+    "@iexec/web3mail": "^0.5.2",
     "@safe-global/auth-kit": "^1.2.1",
+    "@walletconnect/notify-client": "^0.14.4",
     "@web3auth/base": "4.6.0",
     "@web3auth/modal": "4.6.2",
     "@web3auth/openlogin-adapter": "4.6.0",
@@ -20,6 +23,7 @@
     "next": "14.0.1",
     "react": "^18",
     "react-dom": "^18",
+    "truncate-eth-address": "^1.0.2",
     "viem": "^1.18.4",
     "wagmi": "^1.4.5"
   },

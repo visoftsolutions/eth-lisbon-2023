@@ -93,23 +93,12 @@ export function HomeComponent() {
     setProvider(web3AuthModalPack.getProvider() as SafeEventEmitterProvider);
   };
 
-  const logout = async () => {
-    if (!web3AuthModalPack) return;
-
-    await web3AuthModalPack.signOut();
-
-    setProvider(null);
-    setSafeAuthSignInResponse(null);
-  };
-
   return (
     <div className="flex flex-col gap-4 items-center">
-      <h1 className='text-4xl font-bold text-white'>HELLO FREN</h1>
+      <h1 className='text-4xl font-bold text-white'>DEEP TOUCH</h1>
       <h2 className='text-3xl font-bold text-white'>WELCOME TO THE MADNESS.</h2>
 
       <button className='bg-yellow-400 text-black font-medium py-2 px-4 rounded-md' onClick={async () => await login()}>Join the game</button>
-
-      <button className='border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md' onClick={async () => await logout()}>Logout</button>
     </div>
   );
 }
