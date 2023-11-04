@@ -1,0 +1,12 @@
+{
+    "name": "poly-friend",
+    "version": "1.0.0",
+    "workspaces": [
+      "solidity"
+    ],
+    "scripts": {
+      "clean": "rm -rf node_modules solidity/artifacts solidity/cache"
+    },
+    "author": "",
+    "license": "ISC"
+  }
