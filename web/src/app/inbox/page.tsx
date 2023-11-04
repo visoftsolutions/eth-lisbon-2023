@@ -56,7 +56,7 @@ export default function App() {
     // Register again just in case
     await performRegistration();
     await subscribe();
-  }, [subscribe, isRegistered]);
+  }, [performRegistration, subscribe]);
 
   const { subscription } = useSubscription();
   const { messages } = useMessages();
