@@ -8,11 +8,12 @@ import { useEffect } from 'react';
 export function WalletComponent() {
   const router = useRouter();
   const { open } = useWeb3Modal();
-  const { address, isConnecting, isDisconnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const {data} = useWeb3ModalEvents();
 
   useEffect(() => {
-    if(address && data.event === 'SELECT_WALLET') {
+
+    if((address && data.event === 'SELECT_WALLET') || (address && isConnected)) {
       router.push('/chats');
     }
   }, [address, data.event, router]);
