@@ -1,8 +1,8 @@
 'use client';
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react';
 
@@ -22,7 +22,12 @@ const chains = [mainnet, arbitrum];
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
 // 3. Create modal
-createWeb3Modal({ wagmiConfig, projectId, chains });
+createWeb3Modal({ wagmiConfig, projectId, chains, 
+  connectorImages: {
+    coinbaseWallet: 'https://images.mydapp.com/coinbase.png',
+    metamask: 'https://images.mydapp.com/metamask.png'
+  } 
+});
 
 export default function RootLayout({
   children,
@@ -31,7 +36,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <WagmiConfig config={wagmiConfig}>
           {children}
         </WagmiConfig>
