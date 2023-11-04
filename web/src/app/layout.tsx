@@ -4,7 +4,7 @@ import "./globals.css";
 
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react';
 
-import { arbitrum, mainnet } from 'wagmi/chains';
+import { polygonZkEvmTestnet } from 'wagmi/chains';
 import { WagmiConfig } from "wagmi";
 
 const projectId = 'a61fa6ebedad90290dcb5dab3b28afac';
@@ -16,7 +16,7 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 };
 
-const chains = [mainnet, arbitrum];
+const chains = [polygonZkEvmTestnet];
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
 // 3. Create modal

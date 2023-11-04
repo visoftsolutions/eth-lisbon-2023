@@ -4,11 +4,22 @@ import { SectionLayout } from "@/layout/SectionLayout";
 import Image from "next/image";
 import Link from "next/link";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useContractRead, useAccount } from "wagmi";
+import DeepTouchAbi from '../../abi/DeepTouch.json';
 
 export default function Chats() {
-  const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] =
-    useLocalStorage("userInfo", {});
+  const [userInfoLocalStorageValue] = useLocalStorage("userInfo", {});
   console.log(userInfoLocalStorageValue);
+  const [selectedWalletStorage] = useLocalStorage('selectedWalletStorage', (userInfoLocalStorageValue as any).wallets[0]);
+
+  const { data: contractReadData, isError, isLoading } = useContractRead({
+    address: '0xad4f715cff8d7ea0db728b8b89d27a357d9be613',
+    abi: DeepTouchAbi,
+    functionName: 'getSharesSupply',
+    args: [selectedWalletStorage.address]
+  });
+
+  console.log(contractReadData);
 
   const data = [
     {

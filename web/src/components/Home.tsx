@@ -1,6 +1,5 @@
 "use client";
 
-<<<<<<< Updated upstream
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Web3AuthModalPack, AuthKitSignInData, Web3AuthEventListener } from '@safe-global/auth-kit';
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES, SafeEventEmitterProvider, UserInfo, WALLET_ADAPTERS } from "@web3auth/base";
@@ -10,25 +9,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
 import axios from 'axios';
-=======
-import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import {
-  Web3AuthModalPack,
-  AuthKitSignInData,
-  Web3AuthEventListener,
-} from "@safe-global/auth-kit";
-import {
-  ADAPTER_EVENTS,
-  CHAIN_NAMESPACES,
-  SafeEventEmitterProvider,
-  UserInfo,
-  WALLET_ADAPTERS,
-} from "@web3auth/base";
-import { Web3AuthOptions } from "@web3auth/modal";
-import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
->>>>>>> Stashed changes
 
 const connectedHandler: Web3AuthEventListener = (data) =>
   console.log("CONNECTED", data);
@@ -45,15 +25,7 @@ export function HomeComponent() {
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
     null
   );
-<<<<<<< Updated upstream
-  const [userInfo, setUserInfo] = useState<Partial<UserInfo>>();
-  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
   const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] = useLocalStorage<{} | null>('userInfo', null);
-
-=======
-  const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] =
-    useLocalStorage<any>("userInfo", null);
->>>>>>> Stashed changes
 
   useEffect(() => {
     (async () => {
@@ -158,7 +130,6 @@ export function HomeComponent() {
         }).then(async response => {
           await axios.post(`http://localhost:3001/user/${response.data[0].id}/wallet`, {
             address: safeAuthSignInResponse.eoa,
-<<<<<<< Updated upstream
             kind: 'internal'
           }).then(async walletResponse => {
             setUserInfoLocalStorageValue({
@@ -187,67 +158,47 @@ export function HomeComponent() {
         });
       })();
     
-=======
-            kind: "internal",
-          },
-        ],
-      });
->>>>>>> Stashed changes
 
       router.push("/wallet");
     }
   }, [web3AuthModalPack, userInfo, safeAuthSignInResponse]);
 
   const login = async () => {
-    // if (!web3AuthModalPack) return;
+    if (!web3AuthModalPack) return;
 
-<<<<<<< Updated upstream
     // const signInInfo = await web3AuthModalPack.signIn();
     // console.log('SIGN IN RESPONSE: ', signInInfo);
 
     // const userInfo = await web3AuthModalPack.getUserInfo();
     // console.log('USER INFO: ', userInfo);
-=======
+
     const signInInfo = await web3AuthModalPack.signIn();
     console.log("SIGN IN RESPONSE: ", signInInfo);
 
     const userInfo = await web3AuthModalPack.getUserInfo();
     console.log("USER INFO: ", userInfo);
->>>>>>> Stashed changes
 
-    // setSafeAuthSignInResponse(signInInfo);
-    // setUserInfo(userInfo || undefined);
-    // setProvider(web3AuthModalPack.getProvider() as SafeEventEmitterProvider);
-    new RampInstantSDK({
-      hostAppName: 'DeepTouch',
-      hostLogoUrl: 'https://yourdapp.com/yourlogo.png',
-      hostApiKey: 'ohdyez6tzxc967rmayuezu8mg6fgxszn3b54myc5',
-      swapAmount: '1500000000000000000', // 1,50 ETH in wei
-      swapAsset: 'ETH_ETH',
-      userAddress: '0xDC0512355497a165efb4FAeFc6DDd2c127e19bdd',
-    })
-      .on('*', (event) => console.log(event))
-      .show();
+    setSafeAuthSignInResponse(signInInfo);
+    setUserInfo(userInfo || undefined);
+    setProvider(web3AuthModalPack.getProvider() as SafeEventEmitterProvider);
+  //   new RampInstantSDK({
+  //     hostAppName: 'DeepTouch',
+  //     hostLogoUrl: 'https://yourdapp.com/yourlogo.png',
+  //     hostApiKey: 'ohdyez6tzxc967rmayuezu8mg6fgxszn3b54myc5',
+  //     swapAmount: '1500000000000000000', // 1,50 ETH in wei
+  //     swapAsset: 'ETH_ETH',
+  //     userAddress: '0xDC0512355497a165efb4FAeFc6DDd2c127e19bdd',
+  //   })
+  //     .on('*', (event) => console.log(event))
+  //     .show();
   };
 
   return (
     <div className="flex flex-col gap-4 items-center">
-<<<<<<< Updated upstream
       <h1 className='text-4xl font-bold text-white'>DEEP TOUCH</h1>
       <h2 className='text-3xl font-bold text-white'>TAKE THE LEAP INTO DEEP TOUCH</h2>
 
       <button className='bg-yellow-400 text-black font-medium py-2 px-4 rounded-md' onClick={async () => await login()}>Start your journey </button>
-=======
-      <h1 className="text-4xl font-bold text-white">DEEP TOUCH</h1>
-      <h2 className="text-3xl font-bold text-white">WELCOME TO THE MADNESS.</h2>
-
-      <button
-        className="bg-yellow-400 text-black font-medium py-2 px-4 rounded-md"
-        onClick={async () => await login()}
-      >
-        Join the game
-      </button>
->>>>>>> Stashed changes
     </div>
   );
 }
