@@ -4,12 +4,14 @@ import { Web3AuthModalPack, Web3AuthConfig, AuthKitSignInData, Web3AuthEventList
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES, SafeEventEmitterProvider, UserInfo, WALLET_ADAPTERS } from "@web3auth/base";
 import { Web3AuthOptions } from '@web3auth/modal';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const connectedHandler: Web3AuthEventListener = (data) => console.log('CONNECTED', data);
 const disconnectedHandler: Web3AuthEventListener = (data) => console.log('DISCONNECTED', data);
 
 export function HomeComponent() {
+  const router = useRouter();
   const [web3AuthModalPack, setWeb3AuthModalPack] = useState<Web3AuthModalPack>();
   const [safeAuthSignInResponse, setSafeAuthSignInResponse] = useState<AuthKitSignInData | null>(
     null
@@ -47,7 +49,7 @@ export function HomeComponent() {
 
       const openloginAdapter = new OpenloginAdapter({
         loginSettings: {
-          mfaLevel: 'mandatory'
+          mfaLevel: 'optional'
         },
         adapterSettings: {
           uxMode: 'popup',
@@ -75,13 +77,17 @@ export function HomeComponent() {
     })();
   }, []);
 
-  // useEffect(() => {
-  //   if (web3AuthModalPack && web3AuthModalPack.getProvider()) {
-  //     ;(async () => {
-  //       await login();
-  //     })();
-  //   }
-  // }, [web3AuthModalPack]);
+  useEffect(() => {
+    // if (web3AuthModalPack && web3AuthModalPack.getProvider()) {
+    //   ;(async () => {
+    //     await login();
+    //   })();
+    // }
+
+    if(web3AuthModalPack && userInfo) {
+      router.push('/wallet');
+    }
+  }, [web3AuthModalPack, userInfo]);
 
   const login = async () => {
     if (!web3AuthModalPack) return;
