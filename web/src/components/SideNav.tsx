@@ -23,7 +23,7 @@ export function SideNav() {
       </div>
       
 
-      <button className='border-yellow-400 border text-yellow-200 font-medium py-2 px-4 rounded-md' onClick={() => open()}>Logout</button>
+      {isConnected && <button className='border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md' onClick={() => open()}>Disconnect wallet</button>}
     </div>
   );
 }

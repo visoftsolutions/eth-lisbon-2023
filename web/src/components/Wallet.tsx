@@ -26,7 +26,7 @@ export function WalletComponent() {
     <div className="flex gap-4 items-center">
       <button className='bg-yellow-400 text-black font-medium py-2 px-4 rounded-md' onClick={() => onUseInAppWalletClick()}>Use in-app wallet</button>
 
-      <button className='border-yellow-400 border text-white font-medium py-2 px-4 rounded-md' onClick={() => open()}>Connect external wallet</button>
+      <button className='border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md' onClick={() => open()}>Connect external wallet</button>
     </div>
   );
 }

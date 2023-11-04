@@ -109,7 +109,7 @@ export function HomeComponent() {
 
       <button className='bg-yellow-400 text-black font-medium py-2 px-4 rounded-md' onClick={async () => await login()}>Join the game</button>
 
-      <button className='border-yellow-400 border text-white font-medium py-2 px-4 rounded-md' onClick={async () => await logout()}>Logout</button>
+      <button className='border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md' onClick={async () => await logout()}>Logout</button>
     </div>
   );
 }
