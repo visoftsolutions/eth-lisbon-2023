@@ -1,6 +1,6 @@
 'use client';
 
-import { SideNav } from "@/components/SideNav";
+import { SideNav } from '@/components/SideNav.1';
 
 interface Props {
   children: any
