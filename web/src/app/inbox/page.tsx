@@ -14,6 +14,8 @@ export default function App() {
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { open } = useWeb3Modal();
+  const { acc } = useW3iAccount();
+  const { sub } = useSubscription(acc);
 
   // Initialize the Web3Inbox SDK
   const isReady = useInitWeb3InboxClient({
@@ -67,6 +69,8 @@ export default function App() {
         <div>Loading client...</div>
       ) : (
         <>
+          <p>{acc}</p>
+          <p>{sub}</p>
           {!address ? (
             <button onClick={() => open()}>Connect your wallet</button>
           ) : (
