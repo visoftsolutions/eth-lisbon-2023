@@ -7,7 +7,8 @@ import { Web3AuthOptions } from '@web3auth/modal';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk"
+import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
+import axios from 'axios';
 
 const connectedHandler: Web3AuthEventListener = (data) => console.log('CONNECTED', data);
 const disconnectedHandler: Web3AuthEventListener = (data) => console.log('DISCONNECTED', data);
@@ -20,7 +21,8 @@ export function HomeComponent() {
   );
   const [userInfo, setUserInfo] = useState<Partial<UserInfo>>();
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
-  const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] = useLocalStorage('userInfo', {});
+  const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] = useLocalStorage<{} | null>('userInfo', null);
+
 
   useEffect(() => {
     ; (async () => {
@@ -77,22 +79,65 @@ export function HomeComponent() {
   }, []);
 
   useEffect(() => {
+    // INFO: User was previously logged in.
+    // Check if exists in DB. If so, push to wallets.
     if(userInfoLocalStorageValue) {
-      router.push('/wallet');
+      ;(async () => {
+        await axios.get(`http://localhost:3001/user?name=${(userInfoLocalStorageValue as any).name}&email=${(userInfoLocalStorageValue as any).email}`)
+          .then(response => {
+            console.log('response already in ls', response.data);
+            router.push('/wallet');
+          }).catch(error => {
+            console.log(error.message);
+          });
+      })();
     }
   }, [userInfoLocalStorageValue]);
 
   useEffect(() => {
     if (web3AuthModalPack && userInfo && safeAuthSignInResponse) {
-      setUserInfoLocalStorageValue({
-        ...userInfo,
-        wallets: [
-          {
+      // INFO: Moment w którym user się loguje
+
+      // TODO: Add error handling
+      // INFO: Save user in DB
+      ; (async () => {
+        console.log('before get');
+        await axios.post('http://localhost:3001/user', {
+          name: userInfo.name,
+          image: userInfo.profileImage,
+          email: userInfo.email,
+          typeOfLogin: userInfo.typeOfLogin,
+        }).then(async response => {
+          await axios.post(`http://localhost:3001/user/${response.data[0].id}/wallet`, {
             address: safeAuthSignInResponse.eoa,
             kind: 'internal'
-          }
-        ]
-      });
+          }).then(async walletResponse => {
+            setUserInfoLocalStorageValue({
+              userId: response.data[0].id,
+              name: userInfo.name,
+              image: userInfo.profileImage,
+              email: userInfo.email,
+              typeOfLogin: userInfo.typeOfLogin,
+              wallets: walletResponse.data.wallets
+            });
+          });
+        }).catch(async error => {
+          // INFO: Conflict. User already in DB -> should query user and save data.
+          await axios.get(`http://localhost:3001/user?name=${userInfo.name}&email=${userInfo.email}`).then(getUserReponse => {
+            console.log('getUserReponse', getUserReponse);
+
+            setUserInfoLocalStorageValue({
+              userId: getUserReponse.data[0].id,
+              name: userInfo.name,
+              image: userInfo.profileImage,
+              email: userInfo.email,
+              typeOfLogin: userInfo.typeOfLogin,
+              wallets: getUserReponse.data[0].wallets
+            });
+          });
+        });
+      })();
+    
 
       router.push('/wallet');
     }
@@ -125,9 +170,9 @@ export function HomeComponent() {
   return (
     <div className="flex flex-col gap-4 items-center">
       <h1 className='text-4xl font-bold text-white'>DEEP TOUCH</h1>
-      <h2 className='text-3xl font-bold text-white'>WELCOME TO THE MADNESS.</h2>
+      <h2 className='text-3xl font-bold text-white'>TAKE THE LEAP INTO DEEP TOUCH</h2>
 
-      <button className='bg-yellow-400 text-black font-medium py-2 px-4 rounded-md' onClick={async () => await login()}>Join the game</button>
+      <button className='bg-yellow-400 text-black font-medium py-2 px-4 rounded-md' onClick={async () => await login()}>Start your journey </button>
     </div>
   );
 }

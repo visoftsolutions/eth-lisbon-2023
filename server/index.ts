@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { createClient } from '@supabase/supabase-js'
@@ -16,17 +19,50 @@ app.use(express.json())
 const port = process.env.PORT ?? 3001
 
 app.get('/user', async (req: any, res: any) => {
-  const { data, error } = await supabase
-    .from('users')
-    .select('id, name, email, image')
+  let data
+  const arrUsers = []
 
-  if (error !== null) {
-    return res.status(500).send({
-      error
+  if (req.query.email && req.query.name) {
+    const { data: selectData, error } = await supabase
+      .from('users')
+      .select('id, name, email, image, typeOfLogin')
+      .eq('name', req.query.name)
+      .eq('email', req.query.email)
+
+    if (error !== null) {
+      return res.send({
+        error
+      })
+    }
+
+    data = selectData
+  } else {
+    const { data: selectData, error } = await supabase
+      .from('users')
+      .select('id, name, email, image')
+
+    if (error !== null) {
+      return res.send({
+        error
+      })
+    }
+
+    data = selectData
+  }
+
+  for (let i = 0; i < data.length; i++) {
+    const { data: walletsData } = await supabase
+      .from('wallets')
+      .select('id, address, kind, userId')
+      .eq('userId', data[i].id)
+
+    arrUsers?.push({
+      ...data[i],
+      wallets: walletsData
     })
   }
 
-  return res.send(data)
+  return res.send(arrUsers)
 })
 
 app.post('/user', async (req: any, res: any) => {
@@ -49,13 +85,18 @@ app.post('/user', async (req: any, res: any) => {
     .from('users')
     .insert(req.body)
 
+  const { data: selectData } = await supabase
+    .from('users')
+    .select('id, name, email')
+    .eq('name', req.body.name)
+
   if (error != null) {
     return res.status(500).send({
       error
     })
   }
 
-  res.send('OK')
+  res.send(selectData)
 })
 
 app.get('/user/:id', async (req: any, res: any) => {
@@ -101,6 +142,23 @@ app.post('/user/:id/wallet', async (req: any, res: any) => {
     })
   }
 
+  const { data: selectWalletsData } = await supabase
+    .from('wallets')
+    .select('id, address, kind, userId')
+    .eq('address', req.body.address)
+    .eq('kind', req.body.kind)
+
+  // If already in the list - return ALL wallets
+  if (selectWalletsData!.length > 0) {
+    console.log('selectWalletsData', { selectWalletsData })
+    const { data: selectData } = await supabase
+      .from('wallets')
+      .select('id, address, kind, userId')
+      .eq('userId', req.params.id)
+
+    return res.send(selectData)
+  }
+
   const { error: inserError } = await supabase
     .from('wallets')
     .insert({
@@ -114,7 +172,12 @@ app.post('/user/:id/wallet', async (req: any, res: any) => {
     })
   }
 
-  res.send('OK')
+  const { data: selectData } = await supabase
+    .from('wallets')
+    .select('id, address, kind, userId')
+    .eq('userId', req.params.id)
+
+  res.send(selectData)
 })
 
 app.listen(port, () => {

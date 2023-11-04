@@ -5,6 +5,7 @@ import { useWeb3Modal, useWeb3ModalEvents } from '@web3modal/wagmi/react';
 import { useAccount } from 'wagmi';
 import { useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import axios from 'axios';
 
 export function WalletComponent() {
   const router = useRouter();
@@ -14,20 +15,36 @@ export function WalletComponent() {
   const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] = useLocalStorage('userInfo', {});
 
   useEffect(() => {
-
     if((address && data.event === 'SELECT_WALLET') || (address && isConnected)) {
-      const isAlreadyInList = (userInfoLocalStorageValue as any).wallets.filter((wallet: any) => wallet.address === address);
-
-      if(!isAlreadyInList) {
-        (userInfoLocalStorageValue as any).wallets.push({
-          address,
-          kind: 'external'
-        });
-      }
-      
-      setUserInfoLocalStorageValue(userInfoLocalStorageValue);
-      
-      router.push('/chats');
+      ; (async () => {
+        if((userInfoLocalStorageValue as any).userId) {
+          
+          await axios.get(`http://localhost:3001/user/${(userInfoLocalStorageValue as any).userId}`).then(async response => {
+            console.log('get user res', response.data);
+            let currentUserSettings = userInfoLocalStorageValue;
+  
+            const isAlreadyInList = response.data.wallets.filter((wallet: any) => wallet.address === address);
+  
+            if(isAlreadyInList.length === 0) {
+              await axios.post(`http://localhost:3001/user/${(userInfoLocalStorageValue as any).userId}/wallet`, {
+                address,
+                kind: 'external'
+              }).then(response => {
+                console.log('res wallets', response.data);
+  
+                currentUserSettings = {
+                  ...userInfoLocalStorageValue,
+                  wallets: response.data
+                };
+              });
+            }
+            
+            setUserInfoLocalStorageValue(currentUserSettings);
+            
+            router.push('/chats');
+          });
+        }
+      })();
     }
   }, [address, data.event, router]);
 
