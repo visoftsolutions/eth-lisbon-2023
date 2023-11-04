@@ -171,12 +171,15 @@ export function HomeComponent() {
 
     // const userInfo = await web3AuthModalPack.getUserInfo();
     // console.log('USER INFO: ', userInfo);
+<<<<<<< HEAD
 
     const signInInfo = await web3AuthModalPack.signIn();
     console.log("SIGN IN RESPONSE: ", signInInfo);
 
     const userInfo = await web3AuthModalPack.getUserInfo();
     console.log("USER INFO: ", userInfo);
+=======
+>>>>>>> 1dbf26b (fix)
 
     setSafeAuthSignInResponse(signInInfo);
     setUserInfo(userInfo || undefined);

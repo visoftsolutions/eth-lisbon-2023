@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { MessageTileComponent } from "@/components/MessageTile";
 import { SectionLayout } from "@/layout/SectionLayout";
 import {
@@ -10,7 +10,6 @@ import {
   useSubscription,
   useW3iAccount,
 } from "@web3inbox/widget-react";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
@@ -69,8 +68,8 @@ export default function Profile({ params }: { params: { address: string } }) {
 
   const performNotify = async (
     accounts: (string | undefined)[],
-    title: string,
-    message: string
+    message: string,
+    title?: string
   ) => {
     fetch(
       "https://notify.walletconnect.com/a61fa6ebedad90290dcb5dab3b28afac/notify",
@@ -83,7 +82,7 @@ export default function Profile({ params }: { params: { address: string } }) {
         body: JSON.stringify({
           notification: {
             type: "c9c2dacd-1b7b-4529-ab1c-1cc12808bfa5",
-            title: title,
+            title: title || "",
             body: message,
           },
           accounts: accounts,
@@ -105,15 +104,13 @@ export default function Profile({ params }: { params: { address: string } }) {
   };
 
   // State to hold the title and message input values
-  const [notificationTitle, setNotificationTitle] = useState("");
   const [notificationMessage, setNotificationMessage] = useState("");
 
   // Function to handle the form submission
   const handleNotifySubmit = async (event: any) => {
     event.preventDefault();
-    await performNotify([account], notificationTitle, notificationMessage);
+    await performNotify([account], notificationMessage);
     // Optionally, reset the form fields
-    setNotificationTitle("");
     setNotificationMessage("");
   };
 
@@ -140,12 +137,22 @@ export default function Profile({ params }: { params: { address: string } }) {
         <h2 className="text-2xl font-semibold">{content.name}</h2>
       </div>
 
+      <button onClick={performRegistration} disabled={isRegistering}>
+        {isRegistering ? "Signing..." : "Sign"}
+      </button>
+
+      <p>{JSON.stringify(subscription)}</p>
+
+      <button onClick={performSubscribe} disabled={isSubscribing}>
+        {isSubscribing ? "Subscribing..." : "Subscribe to notifications"}
+      </button>
+
       <div className="flex w-full text-sm">
         <button
           onClick={() => setChat("public")}
           className={`${
             chat === "public"
-              ? "bg-yellow-400 text-black"
+              ? "bg-yellow-400 text-white"
               : "bg-gray-900 text-white"
           } flex-1 py-1 font-medium`}
         >
@@ -173,6 +180,32 @@ export default function Profile({ params }: { params: { address: string } }) {
           ))}
         </div>
       )}
+      <form
+        onSubmit={handleNotifySubmit}
+        className="flex flex-col max-w-md mx-auto"
+      >
+        <div>
+          <label
+            htmlFor="message"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Message:
+          </label>
+          <input
+            id="message"
+            value={notificationMessage}
+            onChange={(e) => setNotificationMessage(e.target.value)}
+            required
+            className="text-black mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <button
+          type="submit"
+          className="mt-4 py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+        >
+          Send
+        </button>
+      </form>
     </SectionLayout>
   );
 }
