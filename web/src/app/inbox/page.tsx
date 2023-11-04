@@ -1,5 +1,4 @@
-'use client';
-
+"use client";
 import {
   useManageSubscription,
   useSubscription,
@@ -7,12 +6,14 @@ import {
   useInitWeb3InboxClient,
   useMessages,
 } from "@web3inbox/widget-react";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useCallback, useEffect } from "react";
 import { useSignMessage, useAccount } from "wagmi";
 
-export default function Inbox() {
+export default function App() {
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
+  const { open } = useWeb3Modal();
 
   // Initialize the Web3Inbox SDK
   const isReady = useInitWeb3InboxClient({
@@ -67,7 +68,7 @@ export default function Inbox() {
       ) : (
         <>
           {!address ? (
-            <div>Connect your wallet</div>
+            <button onClick={() => open()}>Connect your wallet</button>
           ) : (
             <>
               <div>Address: {address}</div>
