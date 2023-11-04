@@ -19,7 +19,7 @@ export default function App() {
   const isReady = useInitWeb3InboxClient({
     // The project ID and domain you setup in the Domain Setup section
     projectId: "a61fa6ebedad90290dcb5dab3b28afac",
-    domain: "localhost",
+    domain: "eth-lisbon-2023-ten.vercel.app",
 
     // Allow localhost development with "unlimited" mode.
     // This authorizes this dapp to control notification subscriptions for all domains (including `app.example.com`), not just `window.location.host`
