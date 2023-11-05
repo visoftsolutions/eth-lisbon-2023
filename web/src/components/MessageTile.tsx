@@ -24,13 +24,13 @@ export function MessageTileComponent({
       
       {params.isMy ? (
         <div className="flex items-center mr-auto">
-          <span className="w-12">{getTime()}</span>
+          <span className="w-8 text-xs text-gray-400">{getTime()}</span>
           <span className="text-yellow-400 px-2 py-1">{`${params.msg}`}</span>
         </div>
         
       ) : (
         <div className="flex flex-row-reverse items-center ml-auto">
-          <span className="w-12">{getTime()}</span>
+          <span className="w-8 text-xs text-gray-400">{getTime()}</span>
           <span className="px-2 py-1 text-gray-200">{`${params.msg}`}</span>
         </div>
         
