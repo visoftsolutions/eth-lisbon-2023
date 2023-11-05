@@ -38,7 +38,7 @@ export function SideNav() {
   }, [walletContext.wallets, selectedWalletLS.wallets]);
 
   return (
-    <div className="flex flex-col gap-8 min-w-[200px] h-[800px]">
+    <div className="flex flex-col gap-8 min-w-[200px] min-h-[80vh]">
       <Image
         src="/logo.jpg"
         alt="app logo"

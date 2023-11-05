@@ -66,7 +66,7 @@ export function UserElement({ image, name, wallets, onTradeClick }: Props) {
         />
         <p className="font-medium text-lg text-gray-200">{name}</p>
       </div>
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-4 items-center">
 
         <p className="font-medium">${usdBuyValue.toFixed(2)}</p>
 
