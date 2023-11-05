@@ -1,30 +1,27 @@
 "use client";
 
 import { SectionLayout } from "@/layout/SectionLayout";
-import Image from "next/image";
-import Link from "next/link";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useContractRead } from "wagmi";
 import DeepTouchAbi from "../../abi/DeepTouch.json";
 import { useEffect, useState } from "react";
 import { useWalletContext } from "@/context/wallet";
-import { useWeb3AuthContext } from "@/context/web3auth";
+import axios from "axios";
+import { createPublicClient, http } from 'viem'
+import { polygonZkEvmTestnet } from 'viem/chains'
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Chats() {
-  const web3AuthContextCheck = useWeb3AuthContext();
-  if (web3AuthContextCheck == undefined) {
-    throw new Error("Context not in Provider");
-  }
-  const { web3Auth, setWeb3Auth } = web3AuthContextCheck;
-
   const walletContextCheck = useWalletContext();
   if (walletContextCheck == undefined) {
     throw new Error("Context not in Provider");
   }
   const { walletContext, setWalletContext } = walletContextCheck;
 
-  const [portoflioValueInEth, setPortfolioValueInEth] = useState<number>(0);
-  const [ethValueInUsd, setEthValueInUsd] = useState<number>(0);
+  const [balanceValueInEth, setBalanceValueInEth] = useState<bigint>(0n);
+  const [sharesValueInEth, setSharesValueInEth] = useState<bigint>(0n);
+  const [ethValueInUsd, setEthValueInUsd] = useState<bigint>(0n);
+  const [listedChats, setListedChats] = useState<any[]>([]);
 
   useContractRead({
     address: "0xad4f715cff8d7ea0db728b8b89d27a357d9be613",
@@ -32,7 +29,7 @@ export default function Chats() {
     functionName: "getSharesSupply",
     args: [walletContext.selectedWallet?.address],
     onSuccess(data) {
-      setPortfolioValueInEth(Number(data));
+      setSharesValueInEth(data as bigint);
     },
   });
 
@@ -42,27 +39,43 @@ export default function Chats() {
     functionName: "getEthPrice",
     onSuccess(data) {
       console.log("ethValueInUsd", data);
-
-      setEthValueInUsd(
-        parseFloat((Number(data) / Number(10 ** 18)).toFixed(2)),
-      );
+      setEthValueInUsd(data as bigint);
     },
   });
 
-  const data = [
-    {
-      address: "0x8A8a18DCC99795c8C83FF609b44A7CAad29AdE46",
-      logo: "/logo.jpg",
-      name: "Paweł",
-      value: "$100.00",
-    },
-    {
-      address: "0x3E6E544f24D183F3f7028615f732d9c437f5C5Fa",
-      logo: "/logo.jpg",
-      name: "Kordian",
-      value: "$0.00",
-    },
-  ];
+  const client = createPublicClient({
+    chain: polygonZkEvmTestnet,
+    transport: http(),
+  })
+
+  useEffect(() => {
+    (async () => {
+    await axios.get("http://localhost:3001/user")
+      .then(async (response) => {
+        console.log(response.data);
+        const filtered = []
+        for (const obj of response.data) {
+          let anyOf = 0
+          for (const wallet of obj.wallets) {
+            let value = await client.readContract({
+              address: "0xad4f715cff8d7ea0db728b8b89d27a357d9be613",
+              abi: DeepTouchAbi,
+              functionName: "getSharesBalance",
+              args: [wallet.address ,walletContext.selectedWallet?.address],
+            }) as bigint;
+            console.log(value)
+            if (value > 0n) {
+              anyOf += 1
+            }
+          }
+          if (anyOf > 0) {
+            filtered.push(obj)
+          }
+        }
+        setListedChats(filtered)
+      })
+    })()
+  }, []);
 
   return (
     <SectionLayout>
@@ -70,16 +83,16 @@ export default function Chats() {
         <div className="flex flex-col gap-1 bg-yellow-400 text-black p-3 rounded-md flex-1">
           <span className="text-xs">PORTFOLIO</span>
           <div className="flex justify-between font-semibold">
-            <p>$10.00</p>
-            <p>1 ETH</p>
+            <p>${Number(balanceValueInEth) / Number(10 ** 18) * Number(ethValueInUsd) / Number(10 ** 18)}</p>
+            <p>{Number(balanceValueInEth) / Number(10 ** 18)} ETH</p>
           </div>
         </div>
 
         <div className="flex flex-col gap-1 bg-yellow-400 text-black p-3 rounded-md flex-1">
-          <span className="text-xs">YOUR KEY VALUE</span>
+          <span className="text-xs">YOUR KEYS VALUE</span>
           <div className="flex justify-between font-semibold">
-            <p>${portoflioValueInEth * ethValueInUsd}</p>
-            <p>{portoflioValueInEth} ETH</p>
+            <p>${Number(sharesValueInEth) / Number(10 ** 18) * Number(ethValueInUsd) / Number(10 ** 18)}</p>
+            <p>{Number(sharesValueInEth) / Number(10 ** 18)} ETH</p>
           </div>
         </div>
       </div>
@@ -88,7 +101,7 @@ export default function Chats() {
         <h4 className="text-lg font-bold">MY CHATS</h4>
 
         <div className="flex flex-col gap-2">
-          {data.map(({ address, logo, name, value }, index) => (
+          {listedChats.map(({ address, logo, name, value }, index) => (
             <Link
               href={`chats/${address}`}
               key={index}

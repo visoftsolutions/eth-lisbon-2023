@@ -17,13 +17,12 @@ export function WalletComponent() {
   }
   const { walletContext, setWalletContext } = walletContextCheck;
   const { open } = useWeb3Modal();
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { data } = useWeb3ModalEvents();
 
   useEffect(() => {
     if (
-      (walletContext.userId && address && data.event === "SELECT_WALLET") ||
-      (walletContext.userId && address && isConnected)
+      (walletContext.userId && address && data.event === "SELECT_WALLET")
     ) {
       (async () => {
         await axios
@@ -62,6 +61,7 @@ export function WalletComponent() {
           <button
             className="border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md"
             onClick={() => {
+              setWalletContext({selectedWallet: walletContext.wallets?.at(0)})
               router.push("/chats");
             }}
           >
