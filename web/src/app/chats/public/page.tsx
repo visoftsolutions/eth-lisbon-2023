@@ -69,8 +69,6 @@ export default function Profile({ params }: { params: { address: string } }) {
   // In order to authorize the dapp to control subscriptions, the user needs to sign a SIWE message which happens automatically when `register()` is called.
   // Depending on the configuration of `domain` and `isLimited`, a different message is generated.
   const performRegistration = useCallback(async () => {
-    console.log("performRegistration");
-    console.log(`address ${address}`);
     if (!address) return;
     await register((message) => signMessageAsync({ message }));
   }, [signMessageAsync, register, address]);
