@@ -18,7 +18,7 @@ export function SideNav() {
   const [selectedWalletLS, setSelectedWalletLS] = useLocalStorage('wallets', {
     selectedWallet: {},
     wallets: []
-  })
+  });
 
   console.log('selectedWalletLS', selectedWalletLS);
 
@@ -32,7 +32,7 @@ export function SideNav() {
       setSelectedWalletLS({
         selectedWallet: walletContext.wallets[0],
         wallets: walletContext.wallets
-      } as any)
+      } as any);
     }
   }, [walletContext.wallets, selectedWalletLS.wallets]);
 
@@ -83,6 +83,9 @@ export function SideNav() {
         </Link>
         <Link className="text-lg" href={"/chats/public"}>
           Public
+        </Link>
+        <Link className="text-lg" href={"/chats/private"}>
+          Private
         </Link>
         <Link className="text-lg" href={"/keys"}>
           Keys
