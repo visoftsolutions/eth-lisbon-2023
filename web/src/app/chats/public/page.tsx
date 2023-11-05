@@ -6,14 +6,13 @@ import {
   useInitWeb3InboxClient,
   useManageSubscription,
   useMessages,
+  useSubscription,
   useW3iAccount,
 } from "@web3inbox/widget-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { TradeModal } from "@/components/TradeModal";
-import { BiDollar } from "react-icons/bi";
 import axios from "axios";
 
 export default function Profile({ params }: { params: { address: string } }) {
@@ -60,23 +59,15 @@ export default function Profile({ params }: { params: { address: string } }) {
     isLimited: false,
   });
 
-  const { account, setAccount, isRegistered, isRegistering, register } =
-    useW3iAccount();
-  useEffect(() => {
-    if (!address) return;
-    // Convert the address into a CAIP-10 blockchain-agnostic account ID and update the Web3Inbox SDK with it
-    setAccount(`eip155:1:${address}`);
-  }, [address, setAccount]);
+  const { isRegistered, isRegistering, register } = useW3iAccount();
 
   // In order to authorize the dapp to control subscriptions, the user needs to sign a SIWE message which happens automatically when `register()` is called.
   // Depending on the configuration of `domain` and `isLimited`, a different message is generated.
   const performRegistration = useCallback(async () => {
+    console.log("performRegistration");
+    console.log(`address ${address}`);
     if (!address) return;
-    try {
-      await register((message) => signMessageAsync({ message }));
-    } catch (registerIdentityError) {
-      // alert(registerIdentityError);
-    }
+    await register((message) => signMessageAsync({ message }));
   }, [signMessageAsync, register, address]);
 
   useEffect(() => {
@@ -93,10 +84,13 @@ export default function Profile({ params }: { params: { address: string } }) {
     await subscribe();
   }, [performRegistration, subscribe]);
 
+  const { subscription } = useSubscription();
   const { messages } = useMessages();
 
   const performNotify = async (message: string, title?: string) => {
-    console.log(`perform notify ${walletsToSend.map((el) => el.address)}`);
+    console.log(
+      `perform notify ${walletsToSend.map((el) => `eip155:1:${el.address}`)}`
+    );
     fetch(
       "https://notify.walletconnect.com/a61fa6ebedad90290dcb5dab3b28afac/notify",
       {
@@ -111,9 +105,9 @@ export default function Profile({ params }: { params: { address: string } }) {
             title: title || "",
             body: message,
           },
-          accounts: walletsToSend.map((el) => el.address),
+          accounts: walletsToSend.map((el) => `eip155:1:${el.address}`),
         }),
-      },
+      }
     )
       .then((response) => {
         if (!response.ok) {
@@ -135,7 +129,6 @@ export default function Profile({ params }: { params: { address: string } }) {
   // Function to handle the form submission
   const handleNotifySubmit = async (event: any) => {
     event.preventDefault();
-    console.log(Date.now());
     setMyMessages([
       ...myMessages,
       {
@@ -148,12 +141,6 @@ export default function Profile({ params }: { params: { address: string } }) {
     await performNotify(notificationMessage);
     // Optionally, reset the form fields
     setNotificationMessage("");
-  };
-
-  const [isTradeModalVisible, setIsTradeModalVisible] = useState(false);
-
-  const onTradeClick = () => {
-    setIsTradeModalVisible(!isTradeModalVisible);
   };
 
   const content = {
@@ -178,15 +165,6 @@ export default function Profile({ params }: { params: { address: string } }) {
             className="rounded-full aspect-square"
           />
           <h2 className="text-2xl font-semibold">{content.name}</h2>
-        </div>
-
-        <div className="">
-          <button
-            onClick={() => onTradeClick()}
-            className="bg-yellow-400 text-black font-medium py-1 px-3 rounded-md flex gap-2 items-center"
-          >
-            Trade <BiDollar size={16} />
-          </button>
         </div>
       </div>
 
@@ -225,7 +203,9 @@ export default function Profile({ params }: { params: { address: string } }) {
                         </button>
                       </>
                     ) : (
-                      <></>
+                      <>
+                        <div>Subscription: {JSON.stringify(subscription)}</div>
+                      </>
                     )}
                   </>
                 )}
@@ -276,13 +256,6 @@ export default function Profile({ params }: { params: { address: string } }) {
           Send
         </button>
       </form>
-
-      {isTradeModalVisible && (
-        <TradeModal
-          isOpen={isTradeModalVisible}
-          setIsOpen={setIsTradeModalVisible}
-        />
-      )}
     </SectionLayout>
   );
 }
