@@ -13,7 +13,7 @@ export function WalletComponent() {
   const { address, isConnected } = useAccount();
   const { data } = useWeb3ModalEvents();
   const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] =
-    useLocalStorage("userInfo", null);
+    useLocalStorage("userInfo", {});
 
   useEffect(() => {
     if (
@@ -77,36 +77,32 @@ export function WalletComponent() {
           <h4 className="text-xl font-semibold">Use in-app wallet</h4>
           <p>If you don’t have a wallet, let us create one for you. </p>
         </div>
-        
+
         <div className="">
           <button
             className="border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md"
             onClick={() => onUseInAppWalletClick()}
           >
-        Use in-app wallet
+            Use in-app wallet
           </button>
         </div>
-        
       </div>
-      
 
       <div className="bg-gray-900 p-8 rounded-md flex flex-col gap-4 w-[600px]">
         <div className="flex flex-col gap-2">
           <h4 className="text-xl font-semibold">Connect Wallet</h4>
           <p>If you have a web3 wallet, connect here.</p>
         </div>
-        
+
         <div className="">
           <button
             className="bg-yellow-400 text-black font-medium py-2 px-4 rounded-md"
             onClick={() => open()}
           >
-        Connect external wallet
+            Connect external wallet
           </button>
         </div>
-        
       </div>
-      
     </div>
   );
 }

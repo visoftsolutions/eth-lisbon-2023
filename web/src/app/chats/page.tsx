@@ -4,7 +4,7 @@ import { SectionLayout } from "@/layout/SectionLayout";
 import Image from "next/image";
 import Link from "next/link";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { useContractRead, useAccount } from "wagmi";
+import { useContractRead } from "wagmi";
 import DeepTouchAbi from "../../abi/DeepTouch.json";
 import { useState } from "react";
 
@@ -47,13 +47,13 @@ export default function Chats() {
       address: "0x8A8a18DCC99795c8C83FF609b44A7CAad29AdE46",
       logo: "/logo.jpg",
       name: "Paweł",
-      value: "$20.00",
+      value: "$100.00",
     },
     {
       address: "0x3E6E544f24D183F3f7028615f732d9c437f5C5Fa",
       logo: "/logo.jpg",
       name: "Kordian",
-      value: "$20.00",
+      value: "$0.00",
     },
   ];
 
@@ -75,11 +75,6 @@ export default function Chats() {
             <p>{portoflioValueInEth} ETH</p>
           </div>
         </div>
-
-        {/* <div className="flex flex-col gap-1 bg-yellow-400 text-black p-3 rounded-md flex-1">
-          <span className="text-xs">YOUR RANK</span>
-          <p className="flex gap-2 font-semibold">2137</p>
-        </div> */}
       </div>
 
       <div className="flex flex-col gap-4">

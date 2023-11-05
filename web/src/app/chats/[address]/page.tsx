@@ -13,9 +13,18 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { ethers } from "ethers";
+import { EthersAdapter } from "@safe-global/protocol-kit";
 
 export default function Profile({ params }: { params: { address: string } }) {
   const [chat, setChat] = useState<"public" | "private">("public");
+  const [myMessages, setMyMessages] = useState<
+    {
+      id: number;
+      date: number;
+      msg: string;
+    }[]
+  >([]);
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { open } = useWeb3Modal();
@@ -63,7 +72,6 @@ export default function Profile({ params }: { params: { address: string } }) {
     await subscribe();
   }, [performRegistration, subscribe]);
 
-  const { subscription } = useSubscription();
   const { messages } = useMessages();
 
   const performNotify = async (message: string, title?: string) => {
@@ -105,6 +113,14 @@ export default function Profile({ params }: { params: { address: string } }) {
   // Function to handle the form submission
   const handleNotifySubmit = async (event: any) => {
     event.preventDefault();
+    setMyMessages([
+      ...myMessages,
+      {
+        id: 1,
+        date: new Date().getMilliseconds(),
+        msg: notificationMessage,
+      },
+    ]);
     await performNotify(notificationMessage);
     // Optionally, reset the form fields
     setNotificationMessage("");
@@ -180,12 +196,20 @@ export default function Profile({ params }: { params: { address: string } }) {
 
       {chat === "public" && (
         <div className="grid grid-cols-1 gap-4">
-          {messages.map((el) => (
-            <MessageTileComponent
-              key={el.id}
-              params={{ date: new Date(), message: el.message.body }}
-            />
-          ))}
+          {messages
+            .map((el) => ({
+              id: el.id,
+              date: el.publishedAt,
+              msg: el.message.body,
+            }))
+            .concat(myMessages)
+            .sort((a, b) => a.date - b.date)
+            .map((el) => (
+              <MessageTileComponent
+                key={el.id}
+                params={{ date: el.date, message: el.msg }}
+              />
+            ))}
         </div>
       )}
 
