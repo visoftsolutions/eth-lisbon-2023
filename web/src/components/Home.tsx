@@ -112,9 +112,6 @@ export function HomeComponent() {
   }, [userInfoLocalStorageValue]);
 
   useEffect(() => {
-    console.log(web3AuthModalPack);
-    console.log(userInfo);
-    console.log(safeAuthSignInResponse);
     if (web3AuthModalPack && userInfo && safeAuthSignInResponse) {
       // INFO: Moment w którym user się loguje
 
@@ -165,12 +162,6 @@ export function HomeComponent() {
 
   const login = async () => {
     if (!web3AuthModalPack) return;
-
-    // const signInInfo = await web3AuthModalPack.signIn();
-    // console.log('SIGN IN RESPONSE: ', signInInfo);
-
-    // const userInfo = await web3AuthModalPack.getUserInfo();
-    // console.log('USER INFO: ', userInfo);
 
     const signInInfo = await web3AuthModalPack.signIn();
     console.log("SIGN IN RESPONSE: ", signInInfo);

@@ -13,7 +13,7 @@ export function WalletComponent() {
   const { address, isConnected } = useAccount();
   const { data } = useWeb3ModalEvents();
   const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] =
-    useLocalStorage("userInfo", {});
+    useLocalStorage("userInfo", null);
 
   useEffect(() => {
     if (

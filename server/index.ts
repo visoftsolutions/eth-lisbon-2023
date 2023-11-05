@@ -72,7 +72,7 @@ app.post('/user', async (req: any, res: any) => {
   const { data } = await supabase
     .from('users')
     .select('name, email')
-    // .eq('name', req.body.name)
+    .eq('name', req.body.name)
     .eq('email', req.body.email)
 
   if (data !== null && data?.length > 0) {
@@ -83,12 +83,38 @@ app.post('/user', async (req: any, res: any) => {
 
   const { error } = await supabase
     .from('users')
-    .insert(req.body)
+    .insert({
+      name: req.body.name,
+      email: req.body.email,
+      typeOfLogin: req.body.typeOfLogin,
+      image: req.body.image
+    })
 
   const { data: selectData } = await supabase
     .from('users')
-    .select('id, name, email')
-    .eq('name', req.body.name)
+    .select('id, name, email, image, typeOfLogin')
+    .eq('email', req.body.email)
+
+    console.log('selectData', selectData)
+
+  const { error: inserError } = await supabase
+    .from('wallets')
+    .insert({
+      address: req.body.wallets[0].address,
+      kind: req.body.wallets[0].kind,
+      userId: selectData![0].id
+    })
+
+  if (inserError != null) {
+    return res.status(500).send({
+      error: inserError
+    })
+  }
+
+  const { data: selectWalletsData } = await supabase
+    .from('wallets')
+    .select('id, address, kind, userId')
+    .eq('userId', selectData![0].id)
 
   if (error != null) {
     return res.status(500).send({
@@ -96,7 +122,10 @@ app.post('/user', async (req: any, res: any) => {
     })
   }
 
-  res.send(selectData)
+  res.send({
+    ...selectData![0],
+    wallets: selectWalletsData
+  })
 })
 
 app.get('/user/:id', async (req: any, res: any) => {
@@ -131,7 +160,6 @@ app.post('/user/:id/wallet', async (req: any, res: any) => {
   const { data, error } = await supabase
     .from('users')
     .select('id')
-    // .eq('name', req.body.name)
     .eq('id', req.params.id)
 
   console.log(data, req.params.id, error)
