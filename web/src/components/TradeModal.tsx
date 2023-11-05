@@ -74,9 +74,7 @@ export function TradeModal({ isOpen, setIsOpen, tradeAddress }: Props) {
       setUsdBuyValue(usdBuyValue);
       setUsdSellValue(usdSellValue);
     }
-    
-
-  }, [ethValueInUsd, buyPriceAfterFee])
+  }, [ethValueInUsd, buyPriceAfterFee]);
 
   const { isLoading, isSuccess, error, writeAsync } = useContractWrite({
     address: config.contractAddress,
@@ -90,11 +88,11 @@ export function TradeModal({ isOpen, setIsOpen, tradeAddress }: Props) {
     abi: DeepTouchAbi,
     functionName: 'sellShares',
     args: [tradeAddress, 1],
-  })
+  });
 
   const onBuyShare = async () => {
     if(buyPriceAfterFee?.toString()) {
-      console.log(buyPriceAfterFee)
+      console.log(buyPriceAfterFee);
       await writeAsync({
         value: buyPriceAfterFee as bigint
       });
@@ -103,7 +101,7 @@ export function TradeModal({ isOpen, setIsOpen, tradeAddress }: Props) {
 
   const onSellShare = async () => {
     if(sellPriceAfterFee?.toString()) {
-      console.log(sellPriceAfterFee)
+      console.log(sellPriceAfterFee);
       await sellSharesAsync({
         value: sellPriceAfterFee as bigint
       });
