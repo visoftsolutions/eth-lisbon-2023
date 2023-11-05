@@ -141,7 +141,7 @@ contract DeepTouch is Ownable {
     /// @param amount The amount of shares to be bought
     function buyShares(address sharesSubject, uint256 amount) public payable {
         uint256 supply = sharesSupply[sharesSubject];
-        require(supply > 0 || sharesSubject == msg.sender, "Only the shares' subject can buy the first share");
+        // require(supply > 0 || sharesSubject == msg.sender, "Only the shares' subject can buy the first share");
         uint256 price = getPrice(supply, amount);
         uint256 protocolFee = price * protocolFeePercent / 1 ether;
         uint256 subjectFee = price * subjectFeePercent / 1 ether;

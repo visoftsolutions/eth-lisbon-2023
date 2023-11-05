@@ -10,6 +10,7 @@ import axios from "axios";
 import { useWeb3AuthContext } from "@/context/web3auth";
 import { useWalletContext } from "@/context/wallet";
 import { Wallet } from "@/context/wallet";
+import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
 
 export function HomeComponent() {
   const router = useRouter();
@@ -129,16 +130,16 @@ export function HomeComponent() {
 
     setWeb3Auth({ web3AuthModalPack, authKitSignInData, userInfo });
 
-    //   new RampInstantSDK({
-    //     hostAppName: 'DeepTouch',
-    //     hostLogoUrl: 'https://yourdapp.com/yourlogo.png',
-    //     hostApiKey: 'ohdyez6tzxc967rmayuezu8mg6fgxszn3b54myc5',
-    //     swapAmount: '1500000000000000000', // 1,50 ETH in wei
-    //     swapAsset: 'ETH_ETH',
-    //     userAddress: '0xDC0512355497a165efb4FAeFc6DDd2c127e19bdd',
-    //   })
-    //     .on('*', (event) => console.log(event))
-    //     .show();
+      new RampInstantSDK({
+        hostAppName: 'DeepTouch',
+        hostLogoUrl: 'https://yourdapp.com/yourlogo.png',
+        hostApiKey: 'ohdyez6tzxc967rmayuezu8mg6fgxszn3b54myc5',
+        swapAmount: '1500000000000000000', // 1,50 ETH in wei
+        swapAsset: 'ETH_ETH',
+        userAddress: '0xDC0512355497a165efb4FAeFc6DDd2c127e19bdd',
+      })
+        .on('*', (event) => console.log(event))
+        .show();
   };
 
   return (
