@@ -205,9 +205,7 @@ export default function Profile({ params }: { params: { address: string } }) {
                         </button>
                       </>
                     ) : (
-                      <>
-                        <div>Subscription: {JSON.stringify(subscription)}</div>
-                      </>
+                      <></>
                     )}
                   </>
                 )}
