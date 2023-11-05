@@ -71,13 +71,19 @@ app.post('/user', async (req: any, res: any) => {
   // Check if iuser is in db, then do not add
   const { data } = await supabase
     .from('users')
-    .select('name, email')
+    .select('id, name, email, image, typeOfLogin')
     .eq('name', req.body.name)
     .eq('email', req.body.email)
 
   if (data !== null && data?.length > 0) {
-    return res.status(409).send({
-      error: 'User already in DB. Aborting.'
+    const { data: selectWalletsData } = await supabase
+    .from('wallets')
+    .select('id, address, kind, userId')
+    .eq('userId', data![0].id)
+
+    return res.send({
+      ...data![0],
+      wallets: selectWalletsData
     })
   }
 
@@ -205,7 +211,7 @@ app.post('/user/:id/wallet', async (req: any, res: any) => {
     .select('id, address, kind, userId')
     .eq('userId', req.params.id)
 
-  res.send(selectData)
+  return res.send(selectData)
 })
 
 app.listen(port, () => {
