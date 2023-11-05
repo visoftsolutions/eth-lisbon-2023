@@ -43,7 +43,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" title="Deep Touch">
-      <body>
+      <body className="bg-black">
         <Web3AuthProvider>
           <WalletContextProvider>
             <QueryClientProvider client={queryClient}>
