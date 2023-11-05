@@ -60,8 +60,8 @@ export function UserElement({ image, name, wallets, onTradeClick }: Props) {
         <Image
           src={image}
           alt="user img"
-          width={64}
-          height={64}
+          width={48}
+          height={48}
           className="rounded-full"
         />
         <p className="font-medium text-lg text-gray-200">{name}</p>
