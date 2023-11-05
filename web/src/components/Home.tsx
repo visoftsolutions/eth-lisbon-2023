@@ -1,26 +1,20 @@
 "use client";
 
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { Web3AuthModalPack, AuthKitSignInData, Web3AuthEventListener } from '@safe-global/auth-kit';
-import { ADAPTER_EVENTS, CHAIN_NAMESPACES, SafeEventEmitterProvider, UserInfo, WALLET_ADAPTERS } from "@web3auth/base";
+import { Web3AuthModalPack } from '@safe-global/auth-kit';
+import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
 import { Web3AuthOptions } from '@web3auth/modal';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
+import { useEffect } from 'react';
 import axios from 'axios';
 import { useWeb3AuthContext } from '@/context/web3auth';
 import { useWalletContext } from '@/context/wallet';
-
-const connectedHandler: Web3AuthEventListener = (data) =>
-  console.log("CONNECTED", data);
-const disconnectedHandler: Web3AuthEventListener = (data) =>
-  console.log("DISCONNECTED", data);
+import { Wallet } from '@/context/wallet';
 
 export function HomeComponent() {
   const router = useRouter();
-  const {web3Auth, setWeb3Auth} = useWeb3AuthContext();
-  const {walletContext, setWalletContext} = useWalletContext();
+  const { web3Auth, setWeb3Auth } = useWeb3AuthContext();
+  const { walletContext, setWalletContext } = useWalletContext();
 
   useEffect(() => {
     if (web3Auth.web3AuthModalPack && web3Auth.authKitSignInData && web3Auth.userInfo) {
@@ -37,9 +31,19 @@ export function HomeComponent() {
           typeOfLogin: web3Auth.userInfo?.typeOfLogin,
         }).then(async response => {
           console.log(response.data)
+          let wallets: Wallet[] = response.data.wallets.map((wallet: any) => {
+            return {
+              id: wallet.id,
+              userId: wallet.userId,
+              kind: wallet.kind,
+              address: wallet.address,
+            }
+          })
+          console.log(wallets);
+          setWalletContext({wallets})
         });
       })();
-    
+
 
       router.push("/wallet");
     }
@@ -97,18 +101,18 @@ export function HomeComponent() {
     const userInfo = await web3AuthModalPack.getUserInfo();
     console.log("USER INFO: ", userInfo);
 
-    setWeb3Auth({web3AuthModalPack, authKitSignInData, userInfo})
+    setWeb3Auth({ web3AuthModalPack, authKitSignInData, userInfo })
 
-  //   new RampInstantSDK({
-  //     hostAppName: 'DeepTouch',
-  //     hostLogoUrl: 'https://yourdapp.com/yourlogo.png',
-  //     hostApiKey: 'ohdyez6tzxc967rmayuezu8mg6fgxszn3b54myc5',
-  //     swapAmount: '1500000000000000000', // 1,50 ETH in wei
-  //     swapAsset: 'ETH_ETH',
-  //     userAddress: '0xDC0512355497a165efb4FAeFc6DDd2c127e19bdd',
-  //   })
-  //     .on('*', (event) => console.log(event))
-  //     .show();
+    //   new RampInstantSDK({
+    //     hostAppName: 'DeepTouch',
+    //     hostLogoUrl: 'https://yourdapp.com/yourlogo.png',
+    //     hostApiKey: 'ohdyez6tzxc967rmayuezu8mg6fgxszn3b54myc5',
+    //     swapAmount: '1500000000000000000', // 1,50 ETH in wei
+    //     swapAsset: 'ETH_ETH',
+    //     userAddress: '0xDC0512355497a165efb4FAeFc6DDd2c127e19bdd',
+    //   })
+    //     .on('*', (event) => console.log(event))
+    //     .show();
   };
 
   return (

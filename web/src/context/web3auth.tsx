@@ -2,7 +2,7 @@ import { AuthKitSignInData, Web3AuthModalPack } from '@safe-global/auth-kit';
 import { UserInfo } from '@web3auth/base';
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
-interface Web3Auth {
+export interface Web3Auth {
     web3AuthModalPack?: Web3AuthModalPack,
     authKitSignInData?: AuthKitSignInData,
     userInfo?: Partial<UserInfo>,

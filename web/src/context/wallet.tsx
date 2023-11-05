@@ -1,13 +1,13 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
-interface Wallet {
+export interface Wallet {
     id: number,
     userId: number,
     kind: 'internal' | 'external',
     address: string,
 }
 
-interface WalletContext {
+export interface WalletContext {
     wallets?: Wallet[],
     selectedWallet?: Wallet,
 }
