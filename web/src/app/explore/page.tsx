@@ -2,38 +2,13 @@
 
 import { SectionLayout } from "@/layout/SectionLayout";
 import Image from "next/image";
-import Link from "next/link";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { useContractRead } from "wagmi";
-import DeepTouchAbi from "../../abi/DeepTouch.json";
 import { useState } from "react";
 import { useGetUser } from "@/hooks/useGetUser";
 import { BiDollar } from "react-icons/bi";
 import { TradeModal } from "@/components/TradeModal";
 
 export default function Chats() {
-  const [userInfoLocalStorageValue] = useLocalStorage("userInfo", {});
-  console.log(userInfoLocalStorageValue);
-  const { data } = useGetUser();
-  const filteredWallets = data?.filter((user) =>
-    user.wallets.filter((wallet) => wallet.kind === "internal"),
-  );
-  console.log("filteredWallets", filteredWallets);
-
-  // const data = [
-  //   {
-  //     address: "0x8A8a18DCC99795c8C83FF609b44A7CAad29AdE46",
-  //     logo: "/logo.jpg",
-  //     name: "Paweł",
-  //     value: "$100.00",
-  //   },
-  //   {
-  //     address: "0x3E6E544f24D183F3f7028615f732d9c437f5C5Fa",
-  //     logo: "/logo.jpg",
-  //     name: "Kordian",
-  //     value: "$0.00",
-  //   },
-  // ];
+  const {data} = useGetUser();
 
   const [isTradeModalVisible, setIsTradeModalVisible] = useState(false);
   const [tradeAddress, setTradeAddress] = useState("");
@@ -58,11 +33,11 @@ export default function Chats() {
                 <Image
                   src={image}
                   alt="user img"
-                  width={36}
-                  height={36}
+                  width={64}
+                  height={64}
                   className="rounded-full"
                 />
-                <p className="font-medium text-gray-300">{name}</p>
+                <p className="font-medium text-lg text-gray-200">{name}</p>
               </div>
               {/* <p className="text-lg font-bold">{value}</p> */}
 

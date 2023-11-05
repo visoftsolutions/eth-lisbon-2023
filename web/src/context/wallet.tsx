@@ -21,13 +21,10 @@ export interface WalletContext {
   selectedWallet?: Wallet;
 }
 
-const WalletContext = createContext<
-  | {
-      walletContext: WalletContext;
-      setWalletContext: (value: WalletContext) => void;
-    }
-  | undefined
->(undefined);
+const WalletContext = createContext<{
+  walletContext: WalletContext;
+  setWalletContext: (value: WalletContext) => void;
+} | undefined>(undefined);
 
 export const useWalletContext = () => useContext(WalletContext);
 
