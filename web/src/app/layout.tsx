@@ -6,6 +6,8 @@ import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react';
 
 import { polygonZkEvmTestnet } from 'wagmi/chains';
 import { WagmiConfig } from "wagmi";
+import { WalletContextProvider } from "@/context/wallet";
+import { Web3AuthProvider } from "@/context/web3auth";
 
 const projectId = 'a61fa6ebedad90290dcb5dab3b28afac';
 
@@ -20,11 +22,12 @@ const chains = [polygonZkEvmTestnet];
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
 // 3. Create modal
-createWeb3Modal({ wagmiConfig, projectId, chains, 
+createWeb3Modal({
+  wagmiConfig, projectId, chains,
   connectorImages: {
     coinbaseWallet: 'https://images.mydapp.com/coinbase.png',
     metamask: 'https://images.mydapp.com/metamask.png'
-  } 
+  }
 });
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -39,11 +42,15 @@ export default function RootLayout({
   return (
     <html lang="en" title="Deep Touch">
       <body>
-      <QueryClientProvider client={queryClient}>
-      <WagmiConfig config={wagmiConfig}>
-          {children}
-        </WagmiConfig>
-      </QueryClientProvider>
+        <Web3AuthProvider>
+          <WalletContextProvider>
+          <QueryClientProvider client={queryClient}>
+            <WagmiConfig config={wagmiConfig}>
+              {children}
+            </WagmiConfig>
+            </QueryClientProvider>
+          </WalletContextProvider>
+        </Web3AuthProvider>
       </body>
     </html>
   );

@@ -1,21 +1,28 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
+"use client";
+
+import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 
 export interface Wallet {
-  id: number;
-  userId: number;
-  kind: "internal" | "external";
-  address: string;
+    id: number;
+    userId: number;
+    kind: "internal" | "external";
+    address: string;
 }
 
 export interface WalletContext {
-  wallets?: Wallet[];
-  selectedWallet?: Wallet;
+    userId?: number
+    wallets?: Wallet[];
+    selectedWallet?: Wallet;
 }
 
 const WalletContext = createContext<{
   walletContext: WalletContext;
   setWalletContext: (value: WalletContext) => void;
+<<<<<<< HEAD
     }>({ walletContext: {}, setWalletContext: () => {} });
+=======
+} | undefined>(undefined);
+>>>>>>> c96567f (contexts)
 
 export const useWalletContext = () => useContext(WalletContext);
 
@@ -26,13 +33,15 @@ type Props = {
 export function WalletContextProvider({ children }: Props) {
   const [value, setValue] = useState<WalletContext>({});
 
+  const set = (val: WalletContext) => {
+    setValue(val);
+  }
+
   return (
     <WalletContext.Provider
       value={{
         walletContext: value,
-        setWalletContext: (value: WalletContext) => {
-          setValue(value);
-        },
+        setWalletContext: set
       }}
     >
       {children}

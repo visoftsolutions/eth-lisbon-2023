@@ -6,15 +6,22 @@ import Link from "next/link";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useContractRead } from "wagmi";
 import DeepTouchAbi from "../../abi/DeepTouch.json";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useWalletContext } from "@/context/wallet";
+import { useWeb3AuthContext } from "@/context/web3auth";
 
 export default function Chats() {
-  const [userInfoLocalStorageValue] = useLocalStorage("userInfo", {});
-  console.log(userInfoLocalStorageValue);
-  const [selectedWalletStorage] = useLocalStorage(
-    "selectedWalletStorage",
-    (userInfoLocalStorageValue as any).wallets[0]
-  );
+  const web3AuthContextCheck = useWeb3AuthContext();
+  if (web3AuthContextCheck == undefined) {
+    throw new Error("Context not in Provider")
+  }
+  const { web3Auth, setWeb3Auth } = web3AuthContextCheck;
+  
+  const walletContextCheck = useWalletContext();
+  if (walletContextCheck == undefined) {
+    throw new Error("Context not in Provider")
+  }
+  const { walletContext, setWalletContext } = walletContextCheck;
 
   const [portoflioValueInEth, setPortfolioValueInEth] = useState<number>(0);
   const [ethValueInUsd, setEthValueInUsd] = useState<number>(0);
@@ -23,7 +30,7 @@ export default function Chats() {
     address: "0xad4f715cff8d7ea0db728b8b89d27a357d9be613",
     abi: DeepTouchAbi,
     functionName: "getSharesSupply",
-    args: [selectedWalletStorage.address],
+    args: [walletContext.selectedWallet?.address],
     onSuccess(data) {
       setPortfolioValueInEth(Number(data));
     },

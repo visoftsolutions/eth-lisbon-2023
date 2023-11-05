@@ -2,22 +2,31 @@
 
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { useAccount } from 'wagmi';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import truncateEthAddress from 'truncate-eth-address';
 import Image from 'next/image';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Listbox } from '@headlessui/react';
 import {AiOutlineArrowDown} from 'react-icons/ai';
+import { useWalletContext } from '@/context/wallet';
 
 
 export function SideNav() {
   const { open } = useWeb3Modal();
   const { address, isConnected } = useAccount();
-  const [userInfoLocalStorageValue] = useLocalStorage('userInfo', {});
-  // const [selectedWallet, setSelectedWallet] = useState((userInfoLocalStorageValue as any).wallets[0]);
-  const [selectedWalletStorage, setSelectedWalletStorage] = useLocalStorage('selectedWalletStorage', (userInfoLocalStorageValue as any).wallets[0]);
+  const walletContextCheck = useWalletContext();
+  if (walletContextCheck == undefined) {
+    throw new Error("Context not in Provider")
+  }
+  const { walletContext, setWalletContext } = walletContextCheck;
   
+  useEffect(() => {
+    if (walletContext.wallets && walletContext.wallets.length > 0) {
+      setWalletContext({ ...walletContext, selectedWallet: walletContext.wallets[0] });
+    }
+  }, [walletContext.wallets]);
+
   return (
     <div className="flex flex-col gap-8 min-w-[200px]">
       <Image src="/logo.jpg" alt="app logo" width={128} height={128} className='rounded-full mx-auto' />
@@ -25,14 +34,14 @@ export function SideNav() {
 
       <div className="">
         <span className=''>Connected wallet</span>
-        <Listbox value={selectedWalletStorage} onChange={setSelectedWalletStorage}>
+        <Listbox value={walletContext.selectedWallet} onChange={(value) => {setWalletContext({selectedWallet: value})}}>
           <Listbox.Button className='text-xs text-gray-400 p-2 border border-gray-800 rounded-md flex justify-between w-full'>
-            {truncateEthAddress(selectedWalletStorage.address)}
+            {truncateEthAddress(walletContext.selectedWallet?.address ?? "")}
             <AiOutlineArrowDown size={16} />
           </Listbox.Button>
 
           <Listbox.Options>
-            {(userInfoLocalStorageValue as any)?.wallets?.map((wallet: any, index: any) => (
+            {walletContext.wallets?.map((wallet, index) => (
               <Listbox.Option
                 key={`${wallet.address}-${index}`}
                 value={wallet}

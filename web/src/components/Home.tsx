@@ -13,8 +13,16 @@ import { Wallet } from "@/context/wallet";
 
 export function HomeComponent() {
   const router = useRouter();
-  const { web3Auth, setWeb3Auth } = useWeb3AuthContext();
-  const { walletContext, setWalletContext } = useWalletContext();
+  const web3AuthContextCheck = useWeb3AuthContext();
+  if (web3AuthContextCheck == undefined) {
+    throw new Error("Context not in Provider")
+  }
+  const { web3Auth, setWeb3Auth } = web3AuthContextCheck;
+  const walletContextCheck = useWalletContext();
+  if (walletContextCheck == undefined) {
+    throw new Error("Context not in Provider")
+  }
+  const { walletContext, setWalletContext } = walletContextCheck;
 
   useEffect(() => {
     if (
@@ -51,18 +59,21 @@ export function HomeComponent() {
                 address: wallet.address,
               };
             });
-            console.log(wallets);
-            setWalletContext({ wallets });
+            setWalletContext({userId: response.data.id, wallets: wallets})
           });
       })();
-
-      router.push("/wallet");
     }
   }, [
     web3Auth.web3AuthModalPack &&
       web3Auth.authKitSignInData &&
       web3Auth.userInfo,
   ]);
+
+  useEffect(() => {
+    if (web3Auth.web3AuthModalPack && walletContext.userId) {
+      router.push("/wallet");
+    }
+  }, [web3Auth.web3AuthModalPack && walletContext.userId]);
 
   const login = async () => {
     const options: Web3AuthOptions = {

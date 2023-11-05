@@ -6,72 +6,50 @@ import { useAccount } from "wagmi";
 import { useEffect } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import axios from "axios";
-import { useWalletContext } from "@/context/wallet";
+import { Wallet, useWalletContext } from "@/context/wallet";
 
 export function WalletComponent() {
   const router = useRouter();
+  // const {web3Auth, setWeb3Auth} = useWeb3AuthContext()
+  const walletContextCheck = useWalletContext();
+  if (walletContextCheck == undefined) {
+    throw new Error("Context not in Provider")
+  }
+  const { walletContext, setWalletContext } = walletContextCheck;
   const { open } = useWeb3Modal();
   const { address, isConnected } = useAccount();
   const { data } = useWeb3ModalEvents();
-  const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] =
-    useLocalStorage("userInfo", {});
-
-    const { walletContext, setWalletContext } = useWalletContext();
 
   useEffect(() => {
     if (
-      (address && data.event === "SELECT_WALLET") ||
-      (address && isConnected)
+      (walletContext.userId && address && data.event === "SELECT_WALLET") ||
+      (walletContext.userId && address && isConnected)
     ) {
       (async () => {
-        if (walletContext.selectedWallet?.userId) {
-          await axios
-            .get(
-              `http://localhost:3001/user/${
-                walletContext.selectedWallet?.userId
-              }`
-            )
-            .then(async (response) => {
-              console.log("get user res", response.data);
-              let currentUserSettings = userInfoLocalStorageValue;
-
-              const isAlreadyInList = response.data.wallets.filter(
-                (wallet: any) => wallet.address === address
-              );
-
-              if (isAlreadyInList.length === 0) {
-                await axios
-                  .post(
-                    `http://localhost:3001/user/${
-                      walletContext.selectedWallet?.userId
-                    }/wallet`,
-                    {
-                      address,
-                      kind: "external",
-                    }
-                  )
-                  .then((response) => {
-                    console.log("res wallets", response.data);
-
-                    currentUserSettings = {
-                      ...userInfoLocalStorageValue,
-                      wallets: response.data,
-                    };
-                  });
+        await axios
+          .post(
+            `http://localhost:3001/user/${walletContext.userId}/wallet`,
+            {
+              address,
+              kind: "external",
+            }
+          )
+          .then((response) => {
+            let wallets: Wallet[] = response.data.map((wallet: any) => {
+              return {
+                id: wallet.id,
+                userId: wallet.userId,
+                kind: wallet.kind,
+                address: wallet.address,
               }
-
-              setUserInfoLocalStorageValue(currentUserSettings);
-
-              router.push("/chats");
             });
-        }
+            let selectedWallet = wallets.find((wallet) => wallet.address == address)
+            setWalletContext({ selectedWallet, wallets })
+          });
+          router.push("/chats");
       })();
     }
-  }, [address, data.event, router]);
-
-  const onUseInAppWalletClick = () => {
-    router.push("/chats");
-  };
+  }, [address, data.event, router, walletContext.userId]);
 
   return (
     <div className="flex gap-4 items-center">
@@ -84,7 +62,7 @@ export function WalletComponent() {
         <div className="">
           <button
             className="border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md"
-            onClick={() => onUseInAppWalletClick()}
+            onClick={() => {router.push("/chats");}}
           >
             Use in-app wallet
           </button>
