@@ -81,6 +81,9 @@ export function SideNav() {
         <Link className="text-lg" href={"/chats"}>
           Chats
         </Link>
+        <Link className="text-lg" href={"/chats/public"}>
+          Public
+        </Link>
         <Link className="text-lg" href={"/keys"}>
           Keys
         </Link>
