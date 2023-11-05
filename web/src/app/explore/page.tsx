@@ -29,7 +29,7 @@ export default function Chats() {
               key={index}
               className="flex justify-between py-2 px-2 bg-gray-900 rounded-md items-center"
             >
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-4 items-center">
                 <Image
                   src={image}
                   alt="user img"

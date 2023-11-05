@@ -1,33 +1,40 @@
 "use client";
 
-import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { useAccount } from "wagmi";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import truncateEthAddress from "truncate-eth-address";
 import Image from "next/image";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Listbox } from "@headlessui/react";
 import { AiOutlineArrowDown } from "react-icons/ai";
 import { useWalletContext } from "@/context/wallet";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export function SideNav() {
-  const { open } = useWeb3Modal();
-  const { address, isConnected } = useAccount();
   const walletContextCheck = useWalletContext();
   if (walletContextCheck == undefined) {
     throw new Error("Context not in Provider");
   }
   const { walletContext, setWalletContext } = walletContextCheck;
+  const [selectedWalletLS, setSelectedWalletLS] = useLocalStorage('wallets', {
+    selectedWallet: {},
+    wallets: []
+  })
+
+  console.log('selectedWalletLS', selectedWalletLS);
 
   useEffect(() => {
-    if (walletContext.wallets && walletContext.wallets.length > 0) {
+    if (walletContext.wallets && walletContext.wallets.length > 0 && selectedWalletLS.wallets && selectedWalletLS.wallets.length > 0) {
       setWalletContext({
         ...walletContext,
         selectedWallet: walletContext.wallets[0],
       });
+
+      setSelectedWalletLS({
+        selectedWallet: walletContext.wallets[0],
+        wallets: walletContext.wallets
+      } as any)
     }
-  }, [walletContext.wallets]);
+  }, [walletContext.wallets, selectedWalletLS.wallets]);
 
   return (
     <div className="flex flex-col gap-8 min-w-[200px]">
@@ -42,19 +49,20 @@ export function SideNav() {
 
       <div className="">
         <span className="">Connected wallet</span>
+        {selectedWalletLS.wallets.length > 0 && 
         <Listbox
-          value={walletContext.selectedWallet}
+          value={selectedWalletLS.selectedWallet}
           onChange={(value) => {
-            setWalletContext({ selectedWallet: value });
+            setSelectedWalletLS({ selectedWallet: value, wallets: selectedWalletLS.wallets });
           }}
         >
           <Listbox.Button className="text-xs text-gray-400 p-2 border border-gray-800 rounded-md flex justify-between w-full">
-            {truncateEthAddress(walletContext.selectedWallet?.address ?? "")}
+            {truncateEthAddress((selectedWalletLS.selectedWallet as any).address ?? "")}
             <AiOutlineArrowDown size={16} />
           </Listbox.Button>
 
           <Listbox.Options>
-            {walletContext.wallets?.map((wallet, index) => (
+            {selectedWalletLS.wallets?.map((wallet: any, index) => (
               <Listbox.Option
                 key={`${wallet.address}-${index}`}
                 value={wallet}
@@ -65,6 +73,8 @@ export function SideNav() {
             ))}
           </Listbox.Options>
         </Listbox>
+        }
+        
       </div>
 
       <div className="flex flex-col gap-4">
