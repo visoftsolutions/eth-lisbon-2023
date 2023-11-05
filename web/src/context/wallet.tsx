@@ -1,37 +1,41 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode } from "react";
 
-export interface Wallet {
-    id: number,
-    userId: number,
-    kind: 'internal' | 'external',
-    address: string,
+interface Wallet {
+  id: number;
+  userId: number;
+  kind: "internal" | "external";
+  address: string;
 }
 
-export interface WalletContext {
-    wallets?: Wallet[],
-    selectedWallet?: Wallet,
+interface WalletContext {
+  wallets?: Wallet[];
+  selectedWallet?: Wallet;
 }
 
-const WalletContext = createContext<{ walletContext: WalletContext, setWalletContext: (value: WalletContext) => void }>({ walletContext: {}, setWalletContext: () => { } });
+const WalletContext = createContext<{
+  walletContext: WalletContext;
+  setWalletContext: (value: WalletContext) => void;
+}>({ walletContext: {}, setWalletContext: () => {} });
 
 export const useWalletContext = () => useContext(WalletContext);
 
 type Props = {
-    children: ReactNode;
+  children: ReactNode;
 };
-
 
 export function WalletContextProvider({ children }: Props) {
-    const [value, setValue] = useState<WalletContext>({})
+  const [value, setValue] = useState<WalletContext>({});
 
-    return (
-        <WalletContext.Provider value={{
-            walletContext: value,
-            setWalletContext: (value: WalletContext) => {
-                setValue(value)
-            }
-        }}>
-            {children}
-        </WalletContext.Provider>
-    );
-};
+  return (
+    <WalletContext.Provider
+      value={{
+        walletContext: value,
+        setWalletContext: (value: WalletContext) => {
+          setValue(value);
+        },
+      }}
+    >
+      {children}
+    </WalletContext.Provider>
+  );
+}
