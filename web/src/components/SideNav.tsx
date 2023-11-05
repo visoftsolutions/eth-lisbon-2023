@@ -5,9 +5,10 @@ import Link from "next/link";
 import truncateEthAddress from "truncate-eth-address";
 import Image from "next/image";
 import { Listbox } from "@headlessui/react";
-import { AiOutlineArrowDown } from "react-icons/ai";
+import { AiFillLock, AiOutlineArrowDown } from "react-icons/ai";
 import { useWalletContext } from "@/context/wallet";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { BsFillChatDotsFill, BsFillPersonLinesFill, BsSearchHeart } from "react-icons/bs";
 
 export function SideNav() {
   const walletContextCheck = useWalletContext();
@@ -78,24 +79,24 @@ export function SideNav() {
       </div>
 
       <div className="flex flex-col gap-4">
-        <Link className="text-lg" href={"/chats"}>
-          Chats
+        <Link className="text-lg flex gap-2 items-center" href={"/chats"}>
+          <BsFillChatDotsFill size={16} /> Chats
         </Link>
-        <Link className="text-lg" href={"/chats/public"}>
-          Public
+        <Link className="text-lg flex gap-2 items-center" href={"/chats/public"}>
+          <BsFillPersonLinesFill size={16} /> Troll Box
         </Link>
-        <Link className="text-lg" href={"/chats/private"}>
-          Private
+        <Link className="text-lg flex gap-2 items-center" href={"/chats/private"}>
+          <AiFillLock size={16} /> Private
         </Link>
-        <Link className="text-lg" href={"/keys"}>
+        {/* <Link className="text-lg" href={"/keys"}>
           Keys
+        </Link> */}
+        <Link className="text-lg flex gap-2 items-center" href={"/explore"}>
+          <BsSearchHeart size={16} /> Explore
         </Link>
-        <Link className="text-lg" href={"/explore"}>
-          Explore
-        </Link>
-        <Link className="text-lg" href={"/airdrop"}>
+        {/* <Link className="text-lg" href={"/airdrop"}>
           Airdrop
-        </Link>
+        </Link> */}
       </div>
 
       {/* {isConnected && <button className='border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md' onClick={() => open()}>Disconnect wallet</button>} */}

@@ -180,7 +180,6 @@ export default function Profile({ params }: { params: { address: string } }) {
               <button onClick={() => open()}>Connect your wallet</button>
             ) : (
               <>
-                <div>Address: {address}</div>
                 {!isRegistered ? (
                   <div>
                     To manage notifications, sign and register an identity
@@ -218,7 +217,7 @@ export default function Profile({ params }: { params: { address: string } }) {
         )}
       </>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-1">
         {messages
           .map((el) => ({
             id: el.id,
@@ -235,29 +234,31 @@ export default function Profile({ params }: { params: { address: string } }) {
 
       <form
         onSubmit={handleNotifySubmit}
-        className="flex flex-col max-w-md mx-auto"
+        className="flex flex-col gap-1"
       >
-        <div>
-          <label
-            htmlFor="message"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Message:
-          </label>
+        <label
+          htmlFor="message"
+          className="block text-sm font-medium text-gray-300"
+        >
+            Message
+        </label>
+
+        <div className="flex gap-2 w-full">
           <input
             id="message"
             value={notificationMessage}
             onChange={(e) => setNotificationMessage(e.target.value)}
             required
-            className="text-black mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full text-gray-200 text-sm p-2 border border-gray-900 bg-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-yellow-400 focus:border-yellow-400"
           />
-        </div>
-        <button
-          type="submit"
-          className="mt-4 py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
-        >
+        
+          <button
+            type="submit"
+            className="py-2 px-4 bg-yellow-400 text-gray-900 font-semibold rounded-md shadow hover:bg-yellow-500 text-sm"
+          >
           Send
-        </button>
+          </button>
+        </div>
       </form>
     </SectionLayout>
   );
