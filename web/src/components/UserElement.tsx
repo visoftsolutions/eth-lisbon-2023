@@ -9,7 +9,7 @@ interface Props {
   image: string;
   name: string;
   wallets: any[];
-  onTradeClick: (address: string) => void;
+  onTradeClick?: (address: string) => void;
 }
 
 export function UserElement({ image, name, wallets, onTradeClick }: Props) {
@@ -71,7 +71,7 @@ export function UserElement({ image, name, wallets, onTradeClick }: Props) {
         <p className="font-medium">${usdBuyValue.toFixed(2)}</p>
 
         <div className="flex gap-2">
-          {wallets.filter((wallet) => wallet.kind === "internal").length > 0 && (
+          {onTradeClick && wallets.filter((wallet) => wallet.kind === "internal").length > 0 && (
             <button
               onClick={() => onTradeClick(internalWalletAddress)}
               className="border-yellow-400 text-yellow-400 border font-medium py-1 px-2 rounded-md flex gap-1 items-center text-sm hover:bg-yellow-400 hover:text-black"

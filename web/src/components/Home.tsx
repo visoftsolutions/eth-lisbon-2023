@@ -64,11 +64,7 @@ export function HomeComponent() {
           });
       })();
     }
-  }, [
-    web3Auth.web3AuthModalPack &&
-      web3Auth.authKitSignInData &&
-      web3Auth.userInfo,
-  ]);
+  }, [web3Auth.web3AuthModalPack, web3Auth.authKitSignInData, web3Auth.userInfo]);
 
   useEffect(() => {
     if (web3Auth.web3AuthModalPack && walletContext.userId) {

@@ -6,10 +6,13 @@ import DeepTouchAbi from "../../abi/DeepTouch.json";
 import { useEffect, useState } from "react";
 import { useWalletContext } from "@/context/wallet";
 import axios from "axios";
-import { createPublicClient, http } from 'viem'
-import { polygonZkEvmTestnet } from 'viem/chains'
+import { createPublicClient, http } from 'viem';
+import { polygonZkEvmTestnet } from 'viem/chains';
 import Link from "next/link";
 import Image from "next/image";
+import { config } from "../config";
+import { UserElement } from "@/components/UserElement";
+import { TradeModal } from "@/components/TradeModal";
 
 export default function Chats() {
   const walletContextCheck = useWalletContext();
@@ -24,7 +27,7 @@ export default function Chats() {
   const [listedChats, setListedChats] = useState<any[]>([]);
 
   useContractRead({
-    address: "0xad4f715cff8d7ea0db728b8b89d27a357d9be613",
+    address: config.contractAddress,
     abi: DeepTouchAbi,
     functionName: "getSharesSupply",
     args: [walletContext.selectedWallet?.address],
@@ -34,7 +37,7 @@ export default function Chats() {
   });
 
   useContractRead({
-    address: "0xad4f715cff8d7ea0db728b8b89d27a357d9be613",
+    address: config.contractAddress,
     abi: DeepTouchAbi,
     functionName: "getEthPrice",
     onSuccess(data) {
@@ -46,35 +49,35 @@ export default function Chats() {
   const client = createPublicClient({
     chain: polygonZkEvmTestnet,
     transport: http(),
-  })
+  });
 
   useEffect(() => {
     (async () => {
-    await axios.get("http://localhost:3001/user")
-      .then(async (response) => {
-        console.log(response.data);
-        const filtered = []
-        for (const obj of response.data) {
-          let anyOf = 0
-          for (const wallet of obj.wallets) {
-            let value = await client.readContract({
-              address: "0xad4f715cff8d7ea0db728b8b89d27a357d9be613",
-              abi: DeepTouchAbi,
-              functionName: "getSharesBalance",
-              args: [wallet.address ,walletContext.selectedWallet?.address],
-            }) as bigint;
-            console.log(value)
-            if (value > 0n) {
-              anyOf += 1
+      await axios.get("http://localhost:3001/user")
+        .then(async (response) => {
+          console.log(response.data);
+          const filtered = [];
+          for (const obj of response.data) {
+            let anyOf = 0;
+            for (const wallet of obj.wallets) {
+              let value = await client.readContract({
+                address: config.contractAddress,
+                abi: DeepTouchAbi,
+                functionName: "getSharesBalance",
+                args: [wallet.address ,walletContext.selectedWallet?.address],
+              }) as bigint;
+              console.log(value);
+              if (value > 0n) {
+                anyOf += 1;
+              }
+            }
+            if (anyOf > 0) {
+              filtered.push(obj);
             }
           }
-          if (anyOf > 0) {
-            filtered.push(obj)
-          }
-        }
-        setListedChats(filtered)
-      })
-    })()
+          setListedChats(filtered);
+        });
+    })();
   }, []);
 
   return (
@@ -101,24 +104,27 @@ export default function Chats() {
         <h4 className="text-lg font-bold">MY CHATS</h4>
 
         <div className="flex flex-col gap-2">
-          {listedChats.map(({ address, logo, name, value }, index) => (
-            <Link
-              href={`chats/${address}`}
-              key={index}
-              className="flex justify-between py-2 px-2 bg-gray-900 rounded-md items-center"
-            >
-              <div className="flex gap-2 items-center">
-                <Image
-                  src={logo}
-                  alt="user img"
-                  width={64}
-                  height={64}
-                  className="rounded-full"
-                />
-                <p className="text-lg font-medium">{name}</p>
-              </div>
-              <p className="text-lg font-bold">{value}</p>
+          {listedChats.map(({ id, image, name, wallets }, index) => (
+            <Link key={index} href={`chats/${id}`}> 
+              <UserElement wallets={wallets} name={name} image={image}  />
             </Link>
+            // <Link
+            //   href={`chats/${address}`}
+            //   key={index}
+            //   className="flex justify-between py-2 px-2 bg-gray-900 rounded-md items-center"
+            // >
+            //   <div className="flex gap-2 items-center">
+            //     <Image
+            //       src={image}
+            //       alt="user img"
+            //       width={64}
+            //       height={64}
+            //       className="rounded-full"
+            //     />
+            //     <p className="text-lg font-medium">{name}</p>
+            //   </div>
+            //   <p className="text-lg font-bold">{value}</p>
+            // </Link>
           ))}
         </div>
       </div>

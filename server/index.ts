@@ -77,9 +77,9 @@ app.post('/user', async (req: any, res: any) => {
 
   if (data !== null && data?.length > 0) {
     const { data: selectWalletsData } = await supabase
-    .from('wallets')
-    .select('id, address, kind, userId')
-    .eq('userId', data![0].id)
+      .from('wallets')
+      .select('id, address, kind, userId')
+      .eq('userId', data![0].id)
 
     return res.send({
       ...data![0],
@@ -101,7 +101,7 @@ app.post('/user', async (req: any, res: any) => {
     .select('id, name, email, image, typeOfLogin')
     .eq('email', req.body.email)
 
-    console.log('selectData', selectData)
+  console.log('selectData', selectData)
 
   const { error: inserError } = await supabase
     .from('wallets')
@@ -212,6 +212,30 @@ app.post('/user/:id/wallet', async (req: any, res: any) => {
     .eq('userId', req.params.id)
 
   return res.send(selectData)
+})
+
+app.post('/message', async (req: any, res: any) => {
+  console.log(req.body)
+
+  const { data } = await supabase
+    .from('messages')
+    .insert({
+      ...req.body
+    })
+
+  return res.send('OK')
+})
+
+app.get('/message/:address', async (req: any, res: any) => {
+  console.log(req.params.address)
+
+  const { data } = await supabase
+    .from('messages')
+    .select('id, address, msg, date, isMy')
+    .eq('address', req.params.address)
+
+  console.log(data)
+  return res.send(data)
 })
 
 app.listen(port, () => {

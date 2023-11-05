@@ -9,17 +9,32 @@ import { AiFillLock, AiOutlineArrowDown } from "react-icons/ai";
 import { useWalletContext } from "@/context/wallet";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { BsFillChatDotsFill, BsFillPersonLinesFill, BsSearchHeart } from "react-icons/bs";
+import { MdLeaderboard } from "react-icons/md";
+import {BiMoneyWithdraw} from 'react-icons/bi';
+import { useWeb3AuthContext } from "@/context/web3auth";
+import { useRouter } from "next/navigation";
+import { useDisconnect } from 'wagmi';
+
 
 export function SideNav() {
+  const router = useRouter();
   const walletContextCheck = useWalletContext();
   if (walletContextCheck == undefined) {
     throw new Error("Context not in Provider");
   }
   const { walletContext, setWalletContext } = walletContextCheck;
-  const [selectedWalletLS, setSelectedWalletLS] = useLocalStorage('wallets', {
+  const [selectedWalletLS, setSelectedWalletLS, removeSelectedWalletLS] = useLocalStorage('wallets', {
     selectedWallet: {},
     wallets: []
   });
+
+  const web3AuthContextCheck = useWeb3AuthContext();
+  if (web3AuthContextCheck == undefined) {
+    throw new Error("Context not in Provider");
+  }
+  const { web3Auth, setWeb3Auth } = web3AuthContextCheck;
+  const { disconnect } = useDisconnect();
+
 
   console.log('selectedWalletLS', selectedWalletLS);
 
@@ -37,6 +52,22 @@ export function SideNav() {
     }
   }, [walletContext.wallets, selectedWalletLS.wallets]);
 
+
+  const logout = async () => {
+    console.log('web3Auth', web3Auth);
+    if (!web3Auth.web3AuthModalPack) return;
+
+    await web3Auth.web3AuthModalPack.signOut();
+    setWeb3Auth({ web3AuthModalPack: undefined, authKitSignInData: undefined, userInfo: undefined });
+    setWalletContext({userId: undefined, wallets: undefined, selectedWallet: undefined});
+    setSelectedWalletLS({
+      selectedWallet: undefined,
+      wallets: undefined
+    } as any);
+    disconnect();
+    router.push('/');
+  };
+
   return (
     <div className="flex flex-col gap-8 min-w-[200px] min-h-[80vh]">
       <Image
@@ -50,7 +81,7 @@ export function SideNav() {
 
       <div className="">
         <span className="">Connected wallet</span>
-        {selectedWalletLS.wallets.length > 0 && 
+        {selectedWalletLS?.wallets?.length > 0 && 
         <Listbox
           value={selectedWalletLS.selectedWallet}
           onChange={(value) => {
@@ -82,17 +113,25 @@ export function SideNav() {
         <Link className="text-lg flex gap-2 items-center" href={"/chats"}>
           <BsFillChatDotsFill size={16} /> Chats
         </Link>
-        <Link className="text-lg flex gap-2 items-center" href={"/chats/public"}>
+        {/* <Link className="text-lg flex gap-2 items-center" href={"/chats/public"}>
           <BsFillPersonLinesFill size={16} /> Troll Box
-        </Link>
-        <Link className="text-lg flex gap-2 items-center" href={"/chats/private"}>
+        </Link> */}
+        {/* <Link className="text-lg flex gap-2 items-center" href={"/chats/private"}>
           <AiFillLock size={16} /> Private
-        </Link>
+        </Link> */}
         {/* <Link className="text-lg" href={"/keys"}>
           Keys
         </Link> */}
         <Link className="text-lg flex gap-2 items-center" href={"/explore"}>
           <BsSearchHeart size={16} /> Explore
+        </Link>
+
+        <Link className="text-lg flex gap-2 items-center" href={"/explore"}>
+          <MdLeaderboard size={16} /> Leaderboard
+        </Link>
+
+        <Link className="text-lg flex gap-2 items-center" href={"/explore"}>
+          <BiMoneyWithdraw size={16} /> Withdraw
         </Link>
         {/* <Link className="text-lg" href={"/airdrop"}>
           Airdrop
@@ -100,6 +139,8 @@ export function SideNav() {
       </div>
 
       {/* {isConnected && <button className='border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md' onClick={() => open()}>Disconnect wallet</button>} */}
+
+      <button className='border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md hover:bg-gray-900' onClick={() => logout()}>Logout</button>
     </div>
   );
 }
