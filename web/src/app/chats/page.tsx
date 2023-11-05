@@ -21,9 +21,8 @@ export default function Chats() {
   }
   const { walletContext, setWalletContext } = walletContextCheck;
 
-  const [balanceValueInEth, setBalanceValueInEth] = useState<bigint>(0n);
-  const [sharesValueInEth, setSharesValueInEth] = useState<bigint>(0n);
-  const [ethValueInUsd, setEthValueInUsd] = useState<bigint>(0n);
+  const [sharesValue, setSharesValue] = useState<bigint>(0n);
+  const [ethPrice, setEthPrice] = useState<bigint>(0n);
   const [listedChats, setListedChats] = useState<any[]>([]);
 
   useContractRead({
@@ -31,8 +30,9 @@ export default function Chats() {
     abi: DeepTouchAbi,
     functionName: "getSharesSupply",
     args: [walletContext.selectedWallet?.address],
+    watch: true,
     onSuccess(data) {
-      setSharesValueInEth(data as bigint);
+      setSharesValue(data as bigint);
     },
   });
 
@@ -40,9 +40,9 @@ export default function Chats() {
     address: config.contractAddress,
     abi: DeepTouchAbi,
     functionName: "getEthPrice",
+    watch: true,
     onSuccess(data) {
-      console.log("ethValueInUsd", data);
-      setEthValueInUsd(data as bigint);
+      setEthPrice(data as bigint);
     },
   });
 
@@ -86,16 +86,15 @@ export default function Chats() {
         <div className="flex flex-col gap-1 bg-yellow-400 text-black p-3 rounded-md flex-1">
           <span className="text-xs">PORTFOLIO</span>
           <div className="flex justify-between font-semibold">
-            <p>${Number(balanceValueInEth) / Number(10 ** 18) * Number(ethValueInUsd) / Number(10 ** 18)}</p>
-            <p>{Number(balanceValueInEth) / Number(10 ** 18)} ETH</p>
+            <p>3</p>
           </div>
         </div>
 
         <div className="flex flex-col gap-1 bg-yellow-400 text-black p-3 rounded-md flex-1">
-          <span className="text-xs">YOUR KEYS VALUE</span>
+          <span className="text-xs">YOUR KEYS NUMBER</span>
           <div className="flex justify-between font-semibold">
-            <p>${Number(sharesValueInEth) / Number(10 ** 18) * Number(ethValueInUsd) / Number(10 ** 18)}</p>
-            <p>{Number(sharesValueInEth) / Number(10 ** 18)} ETH</p>
+            <p>{Number(sharesValue)}</p>
+            <p>ETH price{Number(ethPrice) / (10**18)}</p>
           </div>
         </div>
       </div>
@@ -108,23 +107,6 @@ export default function Chats() {
             <Link key={index} href={`chats/${id}`}> 
               <UserElement wallets={wallets} name={name} image={image}  />
             </Link>
-            // <Link
-            //   href={`chats/${address}`}
-            //   key={index}
-            //   className="flex justify-between py-2 px-2 bg-gray-900 rounded-md items-center"
-            // >
-            //   <div className="flex gap-2 items-center">
-            //     <Image
-            //       src={image}
-            //       alt="user img"
-            //       width={64}
-            //       height={64}
-            //       className="rounded-full"
-            //     />
-            //     <p className="text-lg font-medium">{name}</p>
-            //   </div>
-            //   <p className="text-lg font-bold">{value}</p>
-            // </Link>
           ))}
         </div>
       </div>
