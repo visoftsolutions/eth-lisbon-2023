@@ -17,7 +17,6 @@ import {BiDollar} from 'react-icons/bi';
 import axios from "axios";
 
 export default function Profile({ params }: { params: { address: string } }) {
-  const [chat, setChat] = useState<"public" | "private">("public");
   const [myMessages, setMyMessages] = useState<
     {
       id: number;
