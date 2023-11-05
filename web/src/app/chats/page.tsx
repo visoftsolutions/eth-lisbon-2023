@@ -48,13 +48,13 @@ export default function Chats() {
       value: "$20.00",
     },
     {
-      address: "0x8A8a18DCC99795c8C83FF609b44A7CAad29AdE46",
+      address: "0x3Ff9BD426cfE246632314a04E7CEECa5E6E0D606",
       logo: "/logo.jpg",
       name: "Filip RedStone",
       value: "$20.00",
     },
     {
-      address: "0x8A8a18DCC99795c8C83FF609b44A7CAad29AdE46",
+      address: "0xEe547a7e579385494d44585DDc3e9ce74A701614",
       logo: "/logo.jpg",
       name: "Filip Coinbase",
       value: "$20.00",

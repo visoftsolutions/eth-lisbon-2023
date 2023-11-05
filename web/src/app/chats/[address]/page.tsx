@@ -66,11 +66,7 @@ export default function Profile({ params }: { params: { address: string } }) {
   const { subscription } = useSubscription();
   const { messages } = useMessages();
 
-  const performNotify = async (
-    accounts: (string | undefined)[],
-    message: string,
-    title?: string
-  ) => {
+  const performNotify = async (message: string, title?: string) => {
     fetch(
       "https://notify.walletconnect.com/a61fa6ebedad90290dcb5dab3b28afac/notify",
       {
@@ -85,7 +81,7 @@ export default function Profile({ params }: { params: { address: string } }) {
             title: title || "",
             body: message,
           },
-          accounts: accounts,
+          accounts: [params.address],
         }),
       }
     )
@@ -109,7 +105,7 @@ export default function Profile({ params }: { params: { address: string } }) {
   // Function to handle the form submission
   const handleNotifySubmit = async (event: any) => {
     event.preventDefault();
-    await performNotify([account], notificationMessage);
+    await performNotify(notificationMessage);
     // Optionally, reset the form fields
     setNotificationMessage("");
   };
@@ -147,7 +143,6 @@ export default function Profile({ params }: { params: { address: string } }) {
             ) : (
               <>
                 <div>Address: {address}</div>
-                <div>Account ID: {account}</div>
                 {!isRegistered ? (
                   <div>
                     To manage notifications, sign and register an identity
@@ -173,39 +168,7 @@ export default function Profile({ params }: { params: { address: string } }) {
                         </button>
                       </>
                     ) : (
-                      <>
-                        <form
-                          onSubmit={handleNotifySubmit}
-                          className="flex flex-col max-w-md mx-auto"
-                        >
-                          <div className="mt-4">
-                            <label
-                              htmlFor="message"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Message:
-                            </label>
-                            <input
-                              id="message"
-                              value={notificationMessage}
-                              onChange={(e) =>
-                                setNotificationMessage(e.target.value)
-                              }
-                              required
-                              className="text-black mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                            />
-                          </div>
-                          <button
-                            type="submit"
-                            className="mt-4 py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
-                          >
-                            Send
-                          </button>
-                        </form>
-                        <div>You are subscribed</div>
-                        <div>Subscription: {JSON.stringify(subscription)}</div>
-                        <div>Messages: {JSON.stringify(messages)}</div>
-                      </>
+                      <></>
                     )}
                   </>
                 )}
@@ -225,6 +188,7 @@ export default function Profile({ params }: { params: { address: string } }) {
           ))}
         </div>
       )}
+
       <form
         onSubmit={handleNotifySubmit}
         className="flex flex-col max-w-md mx-auto"

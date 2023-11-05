@@ -5,8 +5,8 @@ export function MessageTileComponent({
 }) {
   return (
     <div className="flex gap-4 items-center">
-      <p>{`${params.date}`}</p>
-      <p>{`${params.message}`}</p>
+      <span className="text-gray-400">{`${params.date.toUTCString()}`}</span>
+      <span className="text-yellow-400">{`${params.message}`}</span>
     </div>
   );
 }
