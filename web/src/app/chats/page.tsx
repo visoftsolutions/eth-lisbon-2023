@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useContractRead, useAccount } from "wagmi";
-import DeepTouchAbi from '../../abi/DeepTouch.json';
+import DeepTouchAbi from "../../abi/DeepTouch.json";
 import { useState } from "react";
 
 export default function Chats() {
@@ -20,9 +20,9 @@ export default function Chats() {
   const [ethValueInUsd, setEthValueInUsd] = useState<number>(0);
 
   useContractRead({
-    address: '0xad4f715cff8d7ea0db728b8b89d27a357d9be613',
+    address: "0xad4f715cff8d7ea0db728b8b89d27a357d9be613",
     abi: DeepTouchAbi,
-    functionName: 'getSharesSupply',
+    functionName: "getSharesSupply",
     args: [selectedWalletStorage.address],
     onSuccess(data) {
       setPortfolioValueInEth(Number(data));
@@ -30,13 +30,15 @@ export default function Chats() {
   });
 
   useContractRead({
-    address: '0xad4f715cff8d7ea0db728b8b89d27a357d9be613',
+    address: "0xad4f715cff8d7ea0db728b8b89d27a357d9be613",
     abi: DeepTouchAbi,
-    functionName: 'getEthPrice',
+    functionName: "getEthPrice",
     onSuccess(data) {
-      console.log('ethValueInUsd', data);
-      
-      setEthValueInUsd(parseFloat((Number(data)/Number(10 ** 18)).toFixed(2)));
+      console.log("ethValueInUsd", data);
+
+      setEthValueInUsd(
+        parseFloat((Number(data) / Number(10 ** 18)).toFixed(2))
+      );
     },
   });
 
@@ -44,19 +46,13 @@ export default function Chats() {
     {
       address: "0x8A8a18DCC99795c8C83FF609b44A7CAad29AdE46",
       logo: "/logo.jpg",
-      name: "Filip Binance",
+      name: "Paweł",
       value: "$20.00",
     },
     {
-      address: "0x3Ff9BD426cfE246632314a04E7CEECa5E6E0D606",
+      address: "0x3E6E544f24D183F3f7028615f732d9c437f5C5Fa",
       logo: "/logo.jpg",
-      name: "Filip RedStone",
-      value: "$20.00",
-    },
-    {
-      address: "0xEe547a7e579385494d44585DDc3e9ce74A701614",
-      logo: "/logo.jpg",
-      name: "Filip Coinbase",
+      name: "Kordian",
       value: "$20.00",
     },
   ];
