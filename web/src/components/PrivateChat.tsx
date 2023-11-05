@@ -9,21 +9,12 @@ export function PrivateChat() {
   const web3Provider = web3Auth.web3AuthModalPack?.getProvider();
 
   useEffect(() => {
-
-
-    console.log('web3Provider', web3Provider);
-    if(web3Provider) {
+    console.log("web3Provider", web3Provider);
+    if (web3Provider) {
       const dataProtector = new IExecDataProtector(web3Provider);
-      console.log(web3Provider, dataProtector)
+      console.log(web3Provider, dataProtector);
     }
-    
-  }, [web3Provider])
-  
+  }, [web3Provider]);
 
-
-  return (
-    <div>
-
-    </div>
-  );
+  return <div></div>;
 }

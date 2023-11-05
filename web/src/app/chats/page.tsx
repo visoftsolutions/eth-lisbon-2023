@@ -13,13 +13,13 @@ import { useWeb3AuthContext } from "@/context/web3auth";
 export default function Chats() {
   const web3AuthContextCheck = useWeb3AuthContext();
   if (web3AuthContextCheck == undefined) {
-    throw new Error("Context not in Provider")
+    throw new Error("Context not in Provider");
   }
   const { web3Auth, setWeb3Auth } = web3AuthContextCheck;
-  
+
   const walletContextCheck = useWalletContext();
   if (walletContextCheck == undefined) {
-    throw new Error("Context not in Provider")
+    throw new Error("Context not in Provider");
   }
   const { walletContext, setWalletContext } = walletContextCheck;
 
@@ -44,7 +44,7 @@ export default function Chats() {
       console.log("ethValueInUsd", data);
 
       setEthValueInUsd(
-        parseFloat((Number(data) / Number(10 ** 18)).toFixed(2))
+        parseFloat((Number(data) / Number(10 ** 18)).toFixed(2)),
       );
     },
   });

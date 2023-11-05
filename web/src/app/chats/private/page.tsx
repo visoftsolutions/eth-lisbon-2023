@@ -16,7 +16,7 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { ethers } from "ethers";
 import { EthersAdapter } from "@safe-global/protocol-kit";
 import { TradeModal } from "@/components/TradeModal";
-import {BiDollar} from 'react-icons/bi';
+import { BiDollar } from "react-icons/bi";
 import { PrivateChat } from "@/components/PrivateChat";
 
 export default function Profile({ params }: { params: { address: string } }) {
@@ -94,7 +94,7 @@ export default function Profile({ params }: { params: { address: string } }) {
           },
           accounts: [params.address],
         }),
-      }
+      },
     )
       .then((response) => {
         if (!response.ok) {
@@ -109,7 +109,6 @@ export default function Profile({ params }: { params: { address: string } }) {
         console.error("Error:", error);
       });
   };
-
 
   const [isTradeModalVisible, setIsTradeModalVisible] = useState(false);
 
@@ -142,14 +141,24 @@ export default function Profile({ params }: { params: { address: string } }) {
         </div>
 
         <div className="">
-          <button onClick={() => onTradeClick()} className="bg-yellow-400 text-black font-medium py-1 px-3 rounded-md flex gap-2 items-center">Trade <BiDollar size={16} /></button>
+          <button
+            onClick={() => onTradeClick()}
+            className="bg-yellow-400 text-black font-medium py-1 px-3 rounded-md flex gap-2 items-center"
+          >
+            Trade <BiDollar size={16} />
+          </button>
         </div>
-        
       </div>
 
       <PrivateChat />
 
-      {isTradeModalVisible && <TradeModal tradeAddress="0x" isOpen={isTradeModalVisible} setIsOpen={setIsTradeModalVisible} />}
+      {isTradeModalVisible && (
+        <TradeModal
+          tradeAddress="0x"
+          isOpen={isTradeModalVisible}
+          setIsOpen={setIsTradeModalVisible}
+        />
+      )}
     </SectionLayout>
   );
 }

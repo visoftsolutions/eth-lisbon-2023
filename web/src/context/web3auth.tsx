@@ -10,10 +10,13 @@ export interface Web3Auth {
   userInfo?: Partial<UserInfo>;
 }
 
-export const Web3AuthContext = createContext<{
-  web3Auth: Web3Auth;
-  setWeb3Auth: (value: Web3Auth) => void;
-} | undefined>(undefined);
+export const Web3AuthContext = createContext<
+  | {
+      web3Auth: Web3Auth;
+      setWeb3Auth: (value: Web3Auth) => void;
+    }
+  | undefined
+>(undefined);
 
 export const useWeb3AuthContext = () => useContext(Web3AuthContext);
 
@@ -26,13 +29,13 @@ export function Web3AuthProvider({ children }: Props) {
 
   const set = (val: Web3Auth) => {
     setValue(val);
-  }
+  };
 
   return (
     <Web3AuthContext.Provider
       value={{
         web3Auth: value,
-        setWeb3Auth: set
+        setWeb3Auth: set,
       }}
     >
       {children}

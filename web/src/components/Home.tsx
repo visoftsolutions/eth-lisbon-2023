@@ -15,12 +15,12 @@ export function HomeComponent() {
   const router = useRouter();
   const web3AuthContextCheck = useWeb3AuthContext();
   if (web3AuthContextCheck == undefined) {
-    throw new Error("Context not in Provider")
+    throw new Error("Context not in Provider");
   }
   const { web3Auth, setWeb3Auth } = web3AuthContextCheck;
   const walletContextCheck = useWalletContext();
   if (walletContextCheck == undefined) {
-    throw new Error("Context not in Provider")
+    throw new Error("Context not in Provider");
   }
   const { walletContext, setWalletContext } = walletContextCheck;
 
@@ -45,12 +45,12 @@ export function HomeComponent() {
             wallets: [
               {
                 address: web3Auth.authKitSignInData?.eoa,
-                kind: 'internal'
-              }
-            ]
+                kind: "internal",
+              },
+            ],
           })
           .then(async (response) => {
-            console.log('response.data', response.data);
+            console.log("response.data", response.data);
             let wallets: Wallet[] = response.data.wallets.map((wallet: any) => {
               return {
                 id: wallet.id,
@@ -59,7 +59,7 @@ export function HomeComponent() {
                 address: wallet.address,
               };
             });
-            setWalletContext({userId: response.data.id, wallets: wallets})
+            setWalletContext({ userId: response.data.id, wallets: wallets });
           });
       })();
     }

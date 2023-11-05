@@ -1,14 +1,14 @@
 "use client";
-import { useState } from 'react';
+import { useState } from "react";
 
 export function useLocalStorage<T>(
   key: string,
-  initialValue: T
+  initialValue: T,
 ): [T, (_: T) => void, () => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       // In NextJS SSR window is undefined. We need to check it first
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const item = window.localStorage.getItem(key);
         return item ? (JSON.parse(item) as T) : initialValue;
       }
@@ -27,7 +27,7 @@ export function useLocalStorage<T>(
       setStoredValue(valueToStore);
 
       // In NextJS SSR window is undefined. We need to check it first
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
     } catch (error) {
@@ -38,7 +38,7 @@ export function useLocalStorage<T>(
   const removeValue = () => {
     try {
       // In NextJS SSR window is undefined. We need to check it first
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         window.sessionStorage.removeItem(key);
       }
     } catch (error) {

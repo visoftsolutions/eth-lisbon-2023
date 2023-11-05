@@ -14,10 +14,11 @@ import { TradeModal } from "@/components/TradeModal";
 export default function Chats() {
   const [userInfoLocalStorageValue] = useLocalStorage("userInfo", {});
   console.log(userInfoLocalStorageValue);
-  const {data} = useGetUser();
-  const filteredWallets = data?.filter(user => user.wallets.filter(wallet => wallet.kind === 'internal'));
-  console.log('filteredWallets', filteredWallets)
-
+  const { data } = useGetUser();
+  const filteredWallets = data?.filter((user) =>
+    user.wallets.filter((wallet) => wallet.kind === "internal"),
+  );
+  console.log("filteredWallets", filteredWallets);
 
   // const data = [
   //   {
@@ -35,12 +36,12 @@ export default function Chats() {
   // ];
 
   const [isTradeModalVisible, setIsTradeModalVisible] = useState(false);
-  const [tradeAddress, setTradeAddress] = useState('');
+  const [tradeAddress, setTradeAddress] = useState("");
 
   const onTradeClick = (address: string) => {
     setTradeAddress(address);
     setIsTradeModalVisible(!isTradeModalVisible);
-  }
+  };
 
   return (
     <SectionLayout>
@@ -69,18 +70,34 @@ export default function Chats() {
                 {/* {wallets.map((wallet, index) => (
                   <Link href={`/chats/${wallet.address}/public`} className="border border-gray-900 text-sm text-gray-400 hover:text-white hover:bg-gray-800 p-1 px-2 rounded-md" >Chat {index+1}</Link>
                 ))} */}
-                {
-                 wallets.filter(wallet => wallet.kind === 'internal').length > 0 && 
-                  <button onClick={() => onTradeClick(wallets.filter(wallet => wallet.kind === 'internal')[0].address)} className="border-yellow-400 text-yellow-400 border font-medium py-1 px-2 rounded-md flex gap-1 items-center text-sm hover:bg-yellow-400 hover:text-black">Trade <BiDollar size={12} /></button>
-                }
-                
+                {wallets.filter((wallet) => wallet.kind === "internal").length >
+                  0 && (
+                  <button
+                    onClick={() =>
+                      onTradeClick(
+                        wallets.filter(
+                          (wallet) => wallet.kind === "internal",
+                        )[0].address,
+                      )
+                    }
+                    className="border-yellow-400 text-yellow-400 border font-medium py-1 px-2 rounded-md flex gap-1 items-center text-sm hover:bg-yellow-400 hover:text-black"
+                  >
+                    Trade <BiDollar size={12} />
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {isTradeModalVisible && <TradeModal tradeAddress={tradeAddress} isOpen={isTradeModalVisible} setIsOpen={setIsTradeModalVisible} />}
+      {isTradeModalVisible && (
+        <TradeModal
+          tradeAddress={tradeAddress}
+          isOpen={isTradeModalVisible}
+          setIsOpen={setIsTradeModalVisible}
+        />
+      )}
     </SectionLayout>
   );
 }

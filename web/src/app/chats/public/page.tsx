@@ -13,7 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { TradeModal } from "@/components/TradeModal";
-import {BiDollar} from 'react-icons/bi';
+import { BiDollar } from "react-icons/bi";
 import axios from "axios";
 
 export default function Profile({ params }: { params: { address: string } }) {
@@ -113,7 +113,7 @@ export default function Profile({ params }: { params: { address: string } }) {
           },
           accounts: walletsToSend.map((el) => el.address),
         }),
-      }
+      },
     )
       .then((response) => {
         if (!response.ok) {
@@ -181,9 +181,13 @@ export default function Profile({ params }: { params: { address: string } }) {
         </div>
 
         <div className="">
-          <button onClick={() => onTradeClick()} className="bg-yellow-400 text-black font-medium py-1 px-3 rounded-md flex gap-2 items-center">Trade <BiDollar size={16} /></button>
+          <button
+            onClick={() => onTradeClick()}
+            className="bg-yellow-400 text-black font-medium py-1 px-3 rounded-md flex gap-2 items-center"
+          >
+            Trade <BiDollar size={16} />
+          </button>
         </div>
-        
       </div>
 
       <>
@@ -273,7 +277,12 @@ export default function Profile({ params }: { params: { address: string } }) {
         </button>
       </form>
 
-      {isTradeModalVisible && <TradeModal isOpen={isTradeModalVisible} setIsOpen={setIsTradeModalVisible} />}
+      {isTradeModalVisible && (
+        <TradeModal
+          isOpen={isTradeModalVisible}
+          setIsOpen={setIsTradeModalVisible}
+        />
+      )}
     </SectionLayout>
   );
 }

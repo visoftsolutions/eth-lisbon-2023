@@ -13,7 +13,7 @@ export function WalletComponent() {
   // const {web3Auth, setWeb3Auth} = useWeb3AuthContext()
   const walletContextCheck = useWalletContext();
   if (walletContextCheck == undefined) {
-    throw new Error("Context not in Provider")
+    throw new Error("Context not in Provider");
   }
   const { walletContext, setWalletContext } = walletContextCheck;
   const { open } = useWeb3Modal();
@@ -27,13 +27,10 @@ export function WalletComponent() {
     ) {
       (async () => {
         await axios
-          .post(
-            `http://localhost:3001/user/${walletContext.userId}/wallet`,
-            {
-              address,
-              kind: "external",
-            }
-          )
+          .post(`http://localhost:3001/user/${walletContext.userId}/wallet`, {
+            address,
+            kind: "external",
+          })
           .then((response) => {
             let wallets: Wallet[] = response.data.map((wallet: any) => {
               return {
@@ -41,12 +38,14 @@ export function WalletComponent() {
                 userId: wallet.userId,
                 kind: wallet.kind,
                 address: wallet.address,
-              }
+              };
             });
-            let selectedWallet = wallets.find((wallet) => wallet.address == address)
-            setWalletContext({ selectedWallet, wallets })
+            let selectedWallet = wallets.find(
+              (wallet) => wallet.address == address,
+            );
+            setWalletContext({ selectedWallet, wallets });
           });
-          router.push("/chats");
+        router.push("/chats");
       })();
     }
   }, [address, data.event, router, walletContext.userId]);
@@ -62,7 +61,9 @@ export function WalletComponent() {
         <div className="">
           <button
             className="border-yellow-400 border text-yellow-400 font-medium py-2 px-4 rounded-md"
-            onClick={() => {router.push("/chats");}}
+            onClick={() => {
+              router.push("/chats");
+            }}
           >
             Use in-app wallet
           </button>
