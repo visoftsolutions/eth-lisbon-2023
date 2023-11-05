@@ -15,7 +15,7 @@ export interface WalletContext {
 const WalletContext = createContext<{
   walletContext: WalletContext;
   setWalletContext: (value: WalletContext) => void;
-}>({ walletContext: {}, setWalletContext: () => {} });
+    }>({ walletContext: {}, setWalletContext: () => {} });
 
 export const useWalletContext = () => useContext(WalletContext);
 

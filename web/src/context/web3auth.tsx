@@ -11,7 +11,7 @@ export interface Web3Auth {
 export const Web3AuthContext = createContext<{
   web3Auth: Web3Auth;
   setWeb3Auth: (value: Web3Auth) => void;
-}>({ web3Auth: {}, setWeb3Auth: () => {} });
+    }>({ web3Auth: {}, setWeb3Auth: () => {} });
 
 export const useWeb3AuthContext = () => useContext(Web3AuthContext);
 
