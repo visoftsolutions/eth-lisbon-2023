@@ -217,20 +217,25 @@ export default function Profile({ params }: { params: { address: string } }) {
         )}
       </>
 
-      <div className="grid grid-cols-1 gap-1">
-        {messages
-          .map((el) => ({
-            id: el.id,
-            date: el.publishedAt,
-            msg: el.message.body,
-            isMy: false,
-          }))
-          .concat(myMessages)
-          .sort((a, b) => a.date - b.date)
-          .map((el) => (
-            <MessageTileComponent key={el.id} params={el} />
-          ))}
+      <div className="flex flex-col gap-2">
+        <h4 className="text-lg font-bold">CHAT</h4>
+        <div className="grid grid-cols-1 gap-1 h-[500px] overflow-auto px-4 border border-gray-800">
+        
+          {messages
+            .map((el) => ({
+              id: el.id,
+              date: el.publishedAt,
+              msg: el.message.body,
+              isMy: false,
+            }))
+            .concat(myMessages)
+            .sort((a, b) => a.date - b.date)
+            .map((el) => (
+              <MessageTileComponent key={el.id} params={el} />
+            ))}
+        </div>
       </div>
+      
 
       <form onSubmit={handleNotifySubmit} className="flex flex-col gap-1">
         <label
