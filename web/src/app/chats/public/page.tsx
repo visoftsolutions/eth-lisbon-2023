@@ -6,17 +6,15 @@ import {
   useInitWeb3InboxClient,
   useManageSubscription,
   useMessages,
-  useSubscription,
   useW3iAccount,
 } from "@web3inbox/widget-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { ethers } from "ethers";
-import { EthersAdapter } from "@safe-global/protocol-kit";
 import { TradeModal } from "@/components/TradeModal";
 import {BiDollar} from 'react-icons/bi';
+import axios from "axios";
 
 export default function Profile({ params }: { params: { address: string } }) {
   const [chat, setChat] = useState<"public" | "private">("public");
@@ -31,6 +29,26 @@ export default function Profile({ params }: { params: { address: string } }) {
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { open } = useWeb3Modal();
+  const [walletsToSend, setWalletsToSend] = useState<{ address: string }[]>([]);
+
+  const fetchUsers = () => {
+    console.log("before if");
+
+    // INFO: Moment w którym user się loguje
+
+    // TODO: Add error handling
+    // INFO: Save user in DB
+    (async () => {
+      console.log("before get");
+      await axios.get("http://localhost:3001/user").then(async (response) => {
+        const x = response.data
+          .map((el: any) => el.wallets)
+          .flatMap((el: any) => el);
+        setWalletsToSend(x);
+        console.log("FETCHED");
+      });
+    })();
+  };
 
   // Initialize the Web3Inbox SDK
   const isReady = useInitWeb3InboxClient({
@@ -63,6 +81,7 @@ export default function Profile({ params }: { params: { address: string } }) {
   }, [signMessageAsync, register, address]);
 
   useEffect(() => {
+    fetchUsers();
     // Register even if an identity key exists, to account for stale keys
     performRegistration();
   }, [performRegistration]);
@@ -78,6 +97,7 @@ export default function Profile({ params }: { params: { address: string } }) {
   const { messages } = useMessages();
 
   const performNotify = async (message: string, title?: string) => {
+    console.log(`perform notify ${walletsToSend.map((el) => el.address)}`);
     fetch(
       "https://notify.walletconnect.com/a61fa6ebedad90290dcb5dab3b28afac/notify",
       {
@@ -92,7 +112,7 @@ export default function Profile({ params }: { params: { address: string } }) {
             title: title || "",
             body: message,
           },
-          accounts: [params.address],
+          accounts: walletsToSend.map((el) => el.address),
         }),
       }
     )
@@ -120,8 +140,8 @@ export default function Profile({ params }: { params: { address: string } }) {
     setMyMessages([
       ...myMessages,
       {
-        id: 1,
-        date: (Date.now()),
+        id: Date.now(),
+        date: Date.now(),
         msg: notificationMessage,
         isMy: true,
       },
@@ -212,25 +232,20 @@ export default function Profile({ params }: { params: { address: string } }) {
         )}
       </>
 
-      {chat === "public" && (
-        <div className="grid grid-cols-1 gap-4">
-          {messages
-            .map((el) => ({
-              id: el.id,
-              date: el.publishedAt,
-              msg: el.message.body,
-              isMy: false,
-            }))
-            .concat(myMessages)
-            .sort((a, b) => a.date - b.date)
-            .map((el) => (
-              <MessageTileComponent
-                key={el.id}
-                params={el}
-              />
-            ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 gap-4">
+        {messages
+          .map((el) => ({
+            id: el.id,
+            date: el.publishedAt,
+            msg: el.message.body,
+            isMy: false,
+          }))
+          .concat(myMessages)
+          .sort((a, b) => a.date - b.date)
+          .map((el) => (
+            <MessageTileComponent key={el.id} params={el} />
+          ))}
+      </div>
 
       <form
         onSubmit={handleNotifySubmit}
