@@ -9,6 +9,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
 import axios from 'axios';
+import { useWeb3AuthContext } from '@/context/web3auth';
+import { useWalletContext } from '@/context/wallet';
 
 const connectedHandler: Web3AuthEventListener = (data) =>
   console.log("CONNECTED", data);
@@ -17,102 +19,11 @@ const disconnectedHandler: Web3AuthEventListener = (data) =>
 
 export function HomeComponent() {
   const router = useRouter();
-  const [web3AuthModalPack, setWeb3AuthModalPack] =
-    useState<Web3AuthModalPack>();
-  const [safeAuthSignInResponse, setSafeAuthSignInResponse] =
-    useState<AuthKitSignInData | null>(null);
-  const [userInfo, setUserInfo] = useState<Partial<UserInfo>>();
-  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
-    null
-  );
-  const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] = useLocalStorage<{} | null>('userInfo', null);
+  const {web3Auth, setWeb3Auth} = useWeb3AuthContext();
+  const {walletContext, setWalletContext} = useWalletContext();
 
   useEffect(() => {
-    (async () => {
-      const options: Web3AuthOptions = {
-        clientId:
-          "BCbR9fbi8RFYiy7tYhMI-MqD13b_zqJGW6f_2jKSDRYCIamI15snKkBL2f4AUdkK0_zPK3mfy2F8cXNGdxFQOj8",
-        web3AuthNetwork: "testnet",
-        chainConfig: {
-          chainNamespace: CHAIN_NAMESPACES.EIP155,
-          chainId: "0x5a2",
-          rpcTarget: "https://rpc.public.zkevm-test.net/",
-        },
-        uiConfig: {
-          theme: "dark",
-        },
-      };
-
-      const modalConfig = {
-        [WALLET_ADAPTERS.METAMASK]: {
-          label: "metamask",
-          showOnDesktop: true,
-          showOnMobile: true,
-        },
-      };
-
-      const openloginAdapter = new OpenloginAdapter({
-        loginSettings: {
-          mfaLevel: "optional",
-        },
-        adapterSettings: {
-          uxMode: "popup",
-          whiteLabel: {
-            name: "DeepTouch",
-            dark: true,
-          },
-        },
-      });
-
-      const web3AuthModalPack = new Web3AuthModalPack({
-        txServiceUrl: "https://safe-transaction-goerli.safe.global",
-      });
-
-      await web3AuthModalPack.init({
-        options,
-        adapters: [openloginAdapter],
-        modalConfig,
-      });
-
-      web3AuthModalPack.subscribe(ADAPTER_EVENTS.CONNECTED, connectedHandler);
-      web3AuthModalPack.subscribe(
-        ADAPTER_EVENTS.DISCONNECTED,
-        disconnectedHandler
-      );
-
-      setWeb3AuthModalPack(web3AuthModalPack);
-
-      return () => {
-        web3AuthModalPack.unsubscribe(
-          ADAPTER_EVENTS.CONNECTED,
-          connectedHandler
-        );
-        web3AuthModalPack.unsubscribe(
-          ADAPTER_EVENTS.DISCONNECTED,
-          disconnectedHandler
-        );
-      };
-    })();
-  }, []);
-
-  useEffect(() => {
-    // INFO: User was previously logged in.
-    // Check if exists in DB. If so, push to wallets.
-    if(userInfoLocalStorageValue) {
-      ;(async () => {
-        await axios.get(`http://localhost:3001/user?name=${(userInfoLocalStorageValue as any).name}&email=${(userInfoLocalStorageValue as any).email}`)
-          .then(response => {
-            console.log('response already in ls', response.data);
-            router.push('/wallet');
-          }).catch(error => {
-            console.log(error.message);
-          });
-      })();
-    }
-  }, [userInfoLocalStorageValue]);
-
-  useEffect(() => {
-    if (web3AuthModalPack && userInfo && safeAuthSignInResponse) {
+    if (web3Auth.web3AuthModalPack && web3Auth.authKitSignInData && web3Auth.userInfo) {
       // INFO: Moment w którym user się loguje
 
       // TODO: Add error handling
@@ -120,58 +31,74 @@ export function HomeComponent() {
       ; (async () => {
         console.log('before get');
         await axios.post('http://localhost:3001/user', {
-          name: userInfo.name,
-          image: userInfo.profileImage,
-          email: userInfo.email,
-          typeOfLogin: userInfo.typeOfLogin,
+          name: web3Auth.userInfo?.name,
+          image: web3Auth.userInfo?.profileImage,
+          email: web3Auth.userInfo?.email,
+          typeOfLogin: web3Auth.userInfo?.typeOfLogin,
         }).then(async response => {
-          await axios.post(`http://localhost:3001/user/${response.data[0].id}/wallet`, {
-            address: safeAuthSignInResponse.eoa,
-            kind: 'internal'
-          }).then(async walletResponse => {
-            setUserInfoLocalStorageValue({
-              userId: response.data[0].id,
-              name: userInfo.name,
-              image: userInfo.profileImage,
-              email: userInfo.email,
-              typeOfLogin: userInfo.typeOfLogin,
-              wallets: walletResponse.data.wallets
-            });
-          });
-        }).catch(async error => {
-          // INFO: Conflict. User already in DB -> should query user and save data.
-          await axios.get(`http://localhost:3001/user?name=${userInfo.name}&email=${userInfo.email}`).then(getUserReponse => {
-            console.log('getUserReponse', getUserReponse);
-
-            setUserInfoLocalStorageValue({
-              userId: getUserReponse.data[0].id,
-              name: userInfo.name,
-              image: userInfo.profileImage,
-              email: userInfo.email,
-              typeOfLogin: userInfo.typeOfLogin,
-              wallets: getUserReponse.data[0].wallets
-            });
-          });
+          console.log(response.data)
         });
       })();
     
 
       router.push("/wallet");
     }
-  }, [web3AuthModalPack, userInfo, safeAuthSignInResponse]);
+  }, [web3Auth.web3AuthModalPack && web3Auth.authKitSignInData && web3Auth.userInfo]);
 
   const login = async () => {
-    if (!web3AuthModalPack) return;
+    const options: Web3AuthOptions = {
+      clientId:
+        "BCbR9fbi8RFYiy7tYhMI-MqD13b_zqJGW6f_2jKSDRYCIamI15snKkBL2f4AUdkK0_zPK3mfy2F8cXNGdxFQOj8",
+      web3AuthNetwork: "testnet",
+      chainConfig: {
+        chainNamespace: CHAIN_NAMESPACES.EIP155,
+        chainId: "0x5a2",
+        rpcTarget: "https://rpc.public.zkevm-test.net/",
+      },
+      uiConfig: {
+        theme: "dark",
+      },
+    };
 
-    const signInInfo = await web3AuthModalPack.signIn();
-    console.log("SIGN IN RESPONSE: ", signInInfo);
+    const modalConfig = {
+      [WALLET_ADAPTERS.METAMASK]: {
+        label: "metamask",
+        showOnDesktop: true,
+        showOnMobile: true,
+      },
+    };
+
+    const openloginAdapter = new OpenloginAdapter({
+      loginSettings: {
+        mfaLevel: "optional",
+      },
+      adapterSettings: {
+        uxMode: "popup",
+        whiteLabel: {
+          name: "DeepTouch",
+          dark: true,
+        },
+      },
+    });
+
+    const web3AuthModalPack = new Web3AuthModalPack({
+      txServiceUrl: "https://safe-transaction-goerli.safe.global",
+    });
+
+    await web3AuthModalPack.init({
+      options,
+      adapters: [openloginAdapter],
+      modalConfig,
+    });
+
+    const authKitSignInData = await web3AuthModalPack.signIn();
+    console.log("SIGN IN RESPONSE: ", authKitSignInData);
 
     const userInfo = await web3AuthModalPack.getUserInfo();
     console.log("USER INFO: ", userInfo);
 
-    setSafeAuthSignInResponse(signInInfo);
-    setUserInfo(userInfo || undefined);
-    setProvider(web3AuthModalPack.getProvider() as SafeEventEmitterProvider);
+    setWeb3Auth({web3AuthModalPack, authKitSignInData, userInfo})
+
   //   new RampInstantSDK({
   //     hostAppName: 'DeepTouch',
   //     hostLogoUrl: 'https://yourdapp.com/yourlogo.png',
