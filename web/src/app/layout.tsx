@@ -27,6 +27,10 @@ createWeb3Modal({ wagmiConfig, projectId, chains,
   } 
 });
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
+
 export default function RootLayout({
   children,
 }: {
@@ -35,9 +39,11 @@ export default function RootLayout({
   return (
     <html lang="en" title="Deep Touch">
       <body>
-        <WagmiConfig config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+      <WagmiConfig config={wagmiConfig}>
           {children}
         </WagmiConfig>
+      </QueryClientProvider>
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ import { useAccount } from "wagmi";
 import { useEffect } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import axios from "axios";
+import { useWalletContext } from "@/context/wallet";
 
 export function WalletComponent() {
   const router = useRouter();
@@ -15,17 +16,19 @@ export function WalletComponent() {
   const [userInfoLocalStorageValue, setUserInfoLocalStorageValue] =
     useLocalStorage("userInfo", {});
 
+    const { walletContext, setWalletContext } = useWalletContext();
+
   useEffect(() => {
     if (
       (address && data.event === "SELECT_WALLET") ||
       (address && isConnected)
     ) {
       (async () => {
-        if ((userInfoLocalStorageValue as any).userId) {
+        if (walletContext.selectedWallet?.userId) {
           await axios
             .get(
               `http://localhost:3001/user/${
-                (userInfoLocalStorageValue as any).userId
+                walletContext.selectedWallet?.userId
               }`
             )
             .then(async (response) => {
@@ -40,7 +43,7 @@ export function WalletComponent() {
                 await axios
                   .post(
                     `http://localhost:3001/user/${
-                      (userInfoLocalStorageValue as any).userId
+                      walletContext.selectedWallet?.userId
                     }/wallet`,
                     {
                       address,

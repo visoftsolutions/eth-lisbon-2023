@@ -34,9 +34,15 @@ export function HomeComponent() {
             image: web3Auth.userInfo?.profileImage,
             email: web3Auth.userInfo?.email,
             typeOfLogin: web3Auth.userInfo?.typeOfLogin,
+            wallets: [
+              {
+                address: web3Auth.authKitSignInData?.eoa,
+                kind: 'internal'
+              }
+            ]
           })
           .then(async (response) => {
-            console.log(response.data);
+            console.log('response.data', response.data);
             let wallets: Wallet[] = response.data.wallets.map((wallet: any) => {
               return {
                 id: wallet.id,

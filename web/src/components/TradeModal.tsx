@@ -1,13 +1,14 @@
 import { Dialog } from "@headlessui/react";
 import { Dispatch, SetStateAction, useState } from "react";
 import {BsX} from 'react-icons/bs';
-
+import truncateEthAddress from 'truncate-eth-address';
 interface Props {
   isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  tradeAddress: string;
 }
 
-export function TradeModal({isOpen, setIsOpen}: Props) {
+export function TradeModal({isOpen, setIsOpen, tradeAddress}: Props) {
   const [sharePrice, setSharePrice] = useState(0);
 
   const onBuyShare = () => {};
@@ -32,8 +33,9 @@ export function TradeModal({isOpen, setIsOpen}: Props) {
               <BsX size={24} className="cursor-pointer" onClick={() => setIsOpen(false)} />
             </Dialog.Title>
             
-            <Dialog.Description>
-          Share price: ${sharePrice}
+            <Dialog.Description className={'flex flex-col gap-1 text-sm text-gray-300'}>
+              <span>Share price: ${sharePrice}</span>
+              <span>Address: {truncateEthAddress(tradeAddress)}</span>
             </Dialog.Description>
           </div>
           

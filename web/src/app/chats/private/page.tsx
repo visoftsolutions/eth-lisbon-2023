@@ -110,24 +110,6 @@ export default function Profile({ params }: { params: { address: string } }) {
       });
   };
 
-  // State to hold the title and message input values
-  const [notificationMessage, setNotificationMessage] = useState("");
-
-  // Function to handle the form submission
-  const handleNotifySubmit = async (event: any) => {
-    event.preventDefault();
-    setMyMessages([
-      ...myMessages,
-      {
-        id: 1,
-        date: new Date().getMilliseconds(),
-        msg: notificationMessage,
-      },
-    ]);
-    await performNotify(notificationMessage);
-    // Optionally, reset the form fields
-    setNotificationMessage("");
-  };
 
   const [isTradeModalVisible, setIsTradeModalVisible] = useState(false);
 
@@ -167,7 +149,7 @@ export default function Profile({ params }: { params: { address: string } }) {
 
       <PrivateChat />
 
-      {isTradeModalVisible && <TradeModal isOpen={isTradeModalVisible} setIsOpen={setIsTradeModalVisible} />}
+      {isTradeModalVisible && <TradeModal tradeAddress="0x" isOpen={isTradeModalVisible} setIsOpen={setIsTradeModalVisible} />}
     </SectionLayout>
   );
 }
