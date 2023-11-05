@@ -23,6 +23,7 @@ export default function Profile({ params }: { params: { address: string } }) {
       id: number;
       date: number;
       msg: string;
+      isMy: boolean;
     }[]
   >([]);
   const { address } = useAccount();
@@ -113,12 +114,14 @@ export default function Profile({ params }: { params: { address: string } }) {
   // Function to handle the form submission
   const handleNotifySubmit = async (event: any) => {
     event.preventDefault();
+    console.log(Date.now());
     setMyMessages([
       ...myMessages,
       {
         id: 1,
-        date: new Date().getMilliseconds(),
+        date: (Date.now()),
         msg: notificationMessage,
+        isMy: true,
       },
     ]);
     await performNotify(notificationMessage);
@@ -201,13 +204,14 @@ export default function Profile({ params }: { params: { address: string } }) {
               id: el.id,
               date: el.publishedAt,
               msg: el.message.body,
+              isMy: false,
             }))
             .concat(myMessages)
             .sort((a, b) => a.date - b.date)
             .map((el) => (
               <MessageTileComponent
                 key={el.id}
-                params={{ date: el.date, message: el.msg }}
+                params={el}
               />
             ))}
         </div>
