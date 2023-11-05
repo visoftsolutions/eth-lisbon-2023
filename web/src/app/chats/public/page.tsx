@@ -108,7 +108,9 @@ export default function Profile({ params }: { params: { address: string } }) {
             title: title || "",
             body: message,
           },
-          accounts: walletsToSend.map((el) => `eip155:1:${el.address}`),
+          accounts: walletsToSend
+            .filter((x) => x.address != address)
+            .map((el) => `eip155:1:${el.address}`),
         }),
       }
     )
@@ -230,15 +232,12 @@ export default function Profile({ params }: { params: { address: string } }) {
           ))}
       </div>
 
-      <form
-        onSubmit={handleNotifySubmit}
-        className="flex flex-col gap-1"
-      >
+      <form onSubmit={handleNotifySubmit} className="flex flex-col gap-1">
         <label
           htmlFor="message"
           className="block text-sm font-medium text-gray-300"
         >
-            Message
+          Message
         </label>
 
         <div className="flex gap-2 w-full">
@@ -249,12 +248,12 @@ export default function Profile({ params }: { params: { address: string } }) {
             required
             className="w-full text-gray-200 text-sm p-2 border border-gray-900 bg-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-yellow-400 focus:border-yellow-400"
           />
-        
+
           <button
             type="submit"
             className="py-2 px-4 bg-yellow-400 text-gray-900 font-semibold rounded-md shadow hover:bg-yellow-500 text-sm"
           >
-          Send
+            Send
           </button>
         </div>
       </form>
